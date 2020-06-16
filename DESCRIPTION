@@ -12,8 +12,9 @@ License: What license it uses
 Encoding: UTF-8
 LazyData: true
 Imports: 
-        lexicon,
-        qdap,
         stringr,
         reticulate
+Remotes: 
+        trinker/lexicon,
+        trinker/qdap
 RoxygenNote: 7.1.0
