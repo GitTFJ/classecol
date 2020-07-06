@@ -1,22 +1,20 @@
 Package: classecol
-Title: What the Package Does (One Line, Title Case)
-Version: 0.0.0.9000
-Authors@R: 
-    person(given = "First",
-           family = "Last",
-           role = c("aut", "cre"),
-           email = "first.last@example.com",
-           comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: What the package does (one paragraph).
-License: What license it uses
+Title: Ecoligical text classifiers
+Version: 0.1
+Authors@R: person("Thomas Frederick", "Johnson", email = "thomas.frederick.johnson@outlook.com",
+                  role = c("aut", "cre"))
+Description: Text classifiers for ecological culturomics. This includes functions to clean text data. Models built of twitter data but could be used for any text written by the general public. Current classifiers fall into three domains: Hunting, Wildlife, Biography
+License: creative commons
 Encoding: UTF-8
 LazyData: true
 Imports: 
-        lexicon,
-        qdap,
+        lexicon, 
+        qdap, 
         stringr,
         reticulate
-Remotes: 
+Remotes:
         trinker/lexicon,
         trinker/qdap
 RoxygenNote: 7.1.0
+Depends: 
+    R (>= 2.10)

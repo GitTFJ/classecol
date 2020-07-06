@@ -1,8 +1,8 @@
 ## code to prepare `mop` dataset goes here
 #These packages are needed
-#library(lexicon)
-#library(qdap)
-#library(stringr)
+library(lexicon)
+library(qdap)
+library(stringr)
 
 ###Load data----
 data(hash_internet_slang)
@@ -16,16 +16,16 @@ key_rating
 
 
 #http://www.unicode.org/emoji/charts/full-emoji-list.html V13.0
-hash_emoticons_unicode = read.csv("../Manuscript/Package/data/extdata/emoticon_unicode.csv")
+hash_emoticons_unicode = read.csv("data-raw/emoticon_unicode.csv")
 
 #homemade
-hashtag_dictionary = read.csv("../Manuscript/Package/data/extdata/hashtag_dictionary.csv")
+hashtag_dictionary = read.csv("data-raw/hashtag_dictionary.csv")
 hashtag_dictionary = subset(hashtag_dictionary, breakdown != "")
 hashtag_dictionary$vec = as.character(hashtag_dictionary$full)
 hashtag_dictionary$breakdown = as.character(hashtag_dictionary$breakdown)
 
 #https://www.webopedia.com/quick_ref/textmessageabbreviations.asp
-abbreviations = read.csv("../Manuscript/Package/data/extdata/abbreviation.csv")
+abbreviations = read.csv("data-raw/abbreviation.csv")
 
 mop = list(hash_dic = hashtag_dictionary,
            abb = abbreviations,
@@ -34,4 +34,4 @@ mop = list(hash_dic = hashtag_dictionary,
            slang = hash_internet_slang,
            grade = key_grade,
            rating = key_rating)
-usethis::use_data(mop)
+usethis::use_data(mop, overwrite = T)

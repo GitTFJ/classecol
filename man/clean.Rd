@@ -6,7 +6,9 @@
 \usage{
 clean(
   text_vector,
+  level = "simple",
   hashtag = TRUE,
+  twitter_syn = TRUE,
   abbrev = TRUE,
   emoti = TRUE,
   slang = TRUE,
@@ -17,11 +19,35 @@ clean(
 )
 }
 \arguments{
-\item{infile}{special_other: do you want to remove any remaining special characters, punctions and numbers. Defaults to TRUE}
+\item{text_vector}{Choose character vector or string}
+
+\item{level}{Do you want the text to receive a simple or full clean. Default to 'simple'}
+
+\item{hashtag}{Do you want to convert common multi-word hashtags into a split string of words e.g. #TrophyHunting = Trophy Hunting. Defaults to TRUE}
+
+\item{twitter_syn}{Do you want to remove twitter specific terms e.g. RTs}
+
+\item{abbrev}{Do you want to convert abbreviations into their expanded form. Defaults to TRUE}
+
+\item{emoti}{Do you want to convert unicode and ascii emoticons into a readble format e.g. :/ = unsure. Defaults to TRUE}
+
+\item{slang}{Do you want to convert slang into its expanded form. Defaults to TRUE}
+
+\item{grade}{Do you want to convert grades into a readable form e.g. A+ = Excellent. Defaults to TRUE}
+
+\item{rating}{Do you want to convert ratings into a readable form e.g. 10/10 = Excellent. Defaults to TRUE}
+
+\item{url}{Do you want to remove urls. Defaults to TRUE}
+
+\item{special_other}{Do you want to remove any remaining special characters, punctions and numbers. Defaults to TRUE}
 }
 \value{
-a character vector
+A character vector or string
 }
 \description{
-This function loads a text vector
+This function loads a vector os string of type character and tidies the text
+}
+\examples{
+clean("cat :(")
+clean(c("2moro", ":/"))
 }

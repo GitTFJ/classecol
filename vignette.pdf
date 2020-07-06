@@ -1,0 +1,45 @@
+---
+title: "classecol: vignette"
+author: "Thomas Frederick Johnson GitTFJ"
+date: "6 July 2020"
+output: pdf_document
+---
+
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```
+library(classecol)
+```
+
+
+```
+#dir.create("models")
+#download_models("models")
+```
+
+
+```
+df = data.frame(text = c("Prime Minister of the United Kingdom and @Conservatives
+ leader. Member of Parliament for Uxbridge and South Ruislip. #StayAlert", "Quantitative ecologist interested in conservation & population dynamics. Lecturer at University of Reading, UK. She/her", "University of Reading"))
+ direc = paste(getwd(),"/", "models/classecol-models-master/", sep = "")
+```
+
+
+```
+use_python("C:/Users/mn826766/Anaconda3/python.exe")
+data = r_to_py(df)
+model_directory = r_to_py(direc)
+bio_class(
+  type = "full",
+  directory = direc)
+```
+
+
+```
+
+```
