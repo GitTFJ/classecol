@@ -2,4 +2,10 @@
 
 export(bio_class)
 export(clean)
+export(contract)
 export(download_models)
+export(env_class)
+export(hunt_class)
+export(lang_eng)
+export(senti_matrix)
+export(valence)

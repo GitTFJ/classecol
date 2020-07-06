@@ -45,7 +45,7 @@ clean(
 A character vector or string
 }
 \description{
-This function loads a vector os string of type character and tidies the text
+This function loads a vector or string of type character and tidies the text
 }
 \examples{
 clean("cat :(")

@@ -2,7 +2,7 @@
 % Please edit documentation in R/download_models.R
 \name{download_models}
 \alias{download_models}
-\title{Clean a text vector}
+\title{Download classecol models}
 \usage{
 download_models(location)
 }
@@ -13,5 +13,5 @@ download_models(location)
 A character vector or string
 }
 \description{
-This function loads a vector os string of type character and tidies the text
+This function downloads the required models to run the classecol package
 }

@@ -1,6 +1,6 @@
-#' Clean a text vector
+#' Download classecol models
 #'
-#' This function loads a vector os string of type character and tidies the text
+#' This function downloads the required models to run the classecol package
 #'
 #' @param location Choose a filepath to save the classification models
 #' @return A character vector or string

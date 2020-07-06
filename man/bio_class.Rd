@@ -2,21 +2,31 @@
 % Please edit documentation in R/bio_class.R
 \name{bio_class}
 \alias{bio_class}
-\title{Clean a text vector}
+\title{Biographical classifications of twitter users}
 \usage{
-bio_class(type = "full", directory)
+bio_class(type = "join", directory)
 }
 \arguments{
-\item{type}{Do you want the text to receive a simple or full clean. Default to 'full'}
+\item{type}{Do you want the text to split environemntal-based organisations and experts, or join these categories together. Joining categories improved overall classification accuracy ~5%, but the 'expert' category no longer describes experts and is more fairly described as an environmnetal person/organisation. Defaults to 'join'. Alternate is 'split'}
 
-\item{directory}{Choose cdirectory containing models}
+\item{directory}{Choose directory containing models sourced from download_models function}
 }
 \value{
-A character vector or string
+A character vector of classifications.
+For join:
+Expert - An individual/group/business/lab employed to work with the environment or with qualifications describing expertise. F1 accuracy = 0.90
+Person (not expert) - An individual person not meeting the expert critera. F1 accuracy = 0.82
+Organisation/Group/Company/Other - Any account not meeting the above criteria. F1 accuracy = 0.75
+
+For split:
+Expert - An individual employed to work within the envionmental sciences or with qualifications describing expertise. F1 accuracy = 0.87
+Wildlife org - An Organisation/Group/Company working within an environmental area. F1 accuracy = 0.62
+Person (not expert) - An individual person not meeting the expert critera. F1 accuracy = 0.80
+Organisation/Group/Company/Other - Any account not meeting the above criteria. F1 accuracy = 0.77
 }
 \description{
-This function loads a vector os string of type character and tidies the text
+This function recevies a vector of tweets, and produces classifications that the tweets stance on the environment. Classification accuracy ~80%
 }
 \examples{
-bio_class(type = "full", directory = "models/classecol-models-master/")
+bio_class(type = "join", directory = "models/classecol-models-master/")
 }

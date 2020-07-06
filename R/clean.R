@@ -1,6 +1,6 @@
 #' Clean a text vector
 #'
-#' This function loads a vector os string of type character and tidies the text
+#' This function loads a vector or string of type character and tidies the text
 #'
 #' @param text_vector Choose character vector or string
 #' @param level Do you want the text to receive a simple or full clean. Default to 'simple'
