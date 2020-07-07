@@ -13,12 +13,17 @@ bio_class(type = "join", directory)
 }
 \value{
 A character vector of classifications.
+
+
 For join:
+
 Expert - An individual/group/business/lab employed to work with the environment or with qualifications describing expertise. F1 accuracy = 0.90
 Person (not expert) - An individual person not meeting the expert critera. F1 accuracy = 0.82
 Organisation/Group/Company/Other - Any account not meeting the above criteria. F1 accuracy = 0.75
 
+
 For split:
+
 Expert - An individual employed to work within the envionmental sciences or with qualifications describing expertise. F1 accuracy = 0.87
 Wildlife org - An Organisation/Group/Company working within an environmental area. F1 accuracy = 0.62
 Person (not expert) - An individual person not meeting the expert critera. F1 accuracy = 0.80

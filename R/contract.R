@@ -10,15 +10,15 @@
 #'
 #'
 contract = function(text_vector){
-  text_vector = multigsub(
+  text_vector = qdap::multigsub(
     paste(" ",as.character(mop$contract$contraction), " ", sep = ""),
     paste(" ",as.character(mop$contract$expanded), " ", sep = ""),
     text_vector)
-  text_vector = multigsub(
+  text_vector = qdap::multigsub(
     paste(" ",as.character(mop$nouns$plural), " ", sep = ""),
     paste(" ",as.character(mop$nouns$singular), " ", sep = ""),
     text_vector)
-  text_vector = lemmatize_strings(text_vector, dictionary = lexicon::hash_lemmas)
+  text_vector = textstem::lemmatize_strings(text_vector, dictionary = lexicon::hash_lemmas)
   text_vector = paste(" ", text_vector, " ", sep = "")
   return(text_vector)
 }

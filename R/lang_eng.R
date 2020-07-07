@@ -11,7 +11,7 @@
 #'
 
 lang_eng = function(text_vector){
-  lang = detect_language(text_vector)
+  lang = cld2::detect_language(text_vector)
   lang = ifelse(lang == "en", 1, 0)
   lang = ifelse(is.na(lang), 0, lang)
   return(lang)

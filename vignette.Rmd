@@ -16,7 +16,6 @@ When you click the **Knit** button a document will be generated that includes bo
 library(devtools)
 install_github("GitTFJ/classecol")
 library(classecol)
-library(reticulate)
 ```
 
 
@@ -27,22 +26,42 @@ library(reticulate)
 
 
 ```
+use_python("C:/Users/mn826766/Anaconda3/python.exe")
+direc = paste(getwd(),"/", "models/classecol-models-master/", sep = "")
+model_directory = r_to_py(direc)
+```
+
+
+```
 df = data.frame(text = c("Prime Minister of the United Kingdom and @Conservatives
  leader. Member of Parliament for Uxbridge and South Ruislip. #StayAlert", "Quantitative ecologist interested in conservation & population dynamics. Lecturer at University of Reading, UK. She/her", "University of Reading"))
-direc = paste(getwd(),"/", "models/classecol-models-master/", sep = "")
-```
-
-
-```
-use_python("C:/Users/mn826766/Anaconda3/python.exe")
-data = r_to_py(df)
-model_directory = r_to_py(direc)
+data = reticulate::r_to_py(df)
 bio_class(
-  type = "full",
+  type = "join",
   directory = direc)
 ```
 
 
 ```
+df = data.frame(text = c("I hate hunting", "Cant wait to go hunting", "Hunting for my car keys"))
+data = reticulate::r_to_py(df)
+hunt_class(
+  type = "all",
+  directory = direc)
+```
 
 ```
+df = data.frame(text = c("I love walking in nature", "I am so sad we losing the rainforest. stop the destruction", "Tiger wins the PGA tour again"))
+df$text = classecol::clean(df$text)
+sm = as.matrix(cbind(
+  valence(df$text), 
+  lang_eng(as.character(df$text)), 
+  senti_matrix(as.character(contract(df$text)))))
+data = reticulate::r_to_py(df)
+sent_mat = reticulate::r_to_py(sm)
+env_class(
+  type = "trim",
+  directory = direc)
+```
+
+

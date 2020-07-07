@@ -11,7 +11,7 @@
 #'
 
 valence = function(text_vector){
-  data(hash_valence_shifters)
+  data(lexicon::hash_valence_shifters)
   hash_valence_shifters
   neg = subset(hash_valence_shifters, y == "1")$x
   amp = subset(hash_valence_shifters, y == "2")$x

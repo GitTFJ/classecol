@@ -13,17 +13,24 @@ hunt_class(type = "all", directory)
 }
 \value{
 A character vector of classifications.
+
+
 For all :
+
 Irrelevant - message not related to hunting animals. F1 accuracy = 0.62
 Relevant (against-hunting) - message describes an opposition to hunting. F1 accuracy = 0.94
 Relevant (pro-hunting) - message describes an enjoyment of hunting. F1 accuracy = 0.86
 Relevant (pro-hunt_fish) - message describes an enjoyment of fishing, and uses the word hunting in conjunction. F1 accuracy = 0.96
 
+
 For relevant:
+
 Irrelevant - same as above. F1 accuracy = 0.59
 Relevant - All other categoires combined, where message contains something about hunting. F1 accuracy = 0.93
 
+
 For stance (Model trained on everyhting except irrelevant):
+
 Relevant (against-hunting) - same as above. F1 accuracy = 0.97
 Relevant (pro-hunting) - same as above. F1 accuracy = 0.96
 Relevant (pro-hunt_fish) - same as above. F1 accuracy = 0.96

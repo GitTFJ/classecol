@@ -13,22 +13,31 @@ env_class(type = "trim", directory)
 }
 \value{
 A character vector of classifications.
+
+
 For trim:
+
 Irrelevant - Message not related to the environment. F1 accuracy = 0.80
 Pro-wildlife (positive phrasing) - Mesasage has a positive stance towards the envionment and is talking about it with postivie wording i.e showing interest and enjoyment. F1 accuracy = 0.85
 Pro-wildlife (negative phrasing) - Mesasage has a positive stance towards the envionment but is talking about it with negative wording i.e showing concern. F1 accuracy = 0.68
 
+
 For all :
+
 Irrelevant - same as above. F1 accuracy = 0.79
 Pro-wildlife (positive phrasing) - same as above. F1 accuracy = 0.86
 Pro-wildlife (negative phrasing) - same as above. F1 accuracy = 0.73
 Against-wildlife - Message views the envionment negatively i.e showing fear. F1 accuracy = 0.25!
 
+
 For relevant:
+
 Irrelevant - same as above. F1 accuracy = 0.76
 Relevant - All other categoires combined, where message contains something about the environemnt. F1 accuracy = 0.92
 
+
 For stance (Model trained on everyhting except irrelevant and Against-wildlife):
+
 Pro-wildlife (positive phrasing) - same as above. F1 accuracy = 0.95
 Pro-wildlife (negative phrasing) - same as above. F1 accuracy = 0.80
 }
