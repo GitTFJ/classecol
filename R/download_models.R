@@ -8,7 +8,7 @@
 #' @export
 
 download_models = function(location){
-  download.file(url = "https://github.com/GitTFJ/classecol-models/archive/master.zip", destfile = paste(location,"models.zip", sep = ""))
-  unzip(zipfile = paste(location,"models.zip", sep = ""), exdir = location)
+  download.file(url = "https://github.com/GitTFJ/classecol-models/archive/master.zip", destfile = paste(location,"_zp.zip", sep = ""))
+  unzip(zipfile = paste(location,"_zp.zip", sep = ""), exdir = location)
 }
 

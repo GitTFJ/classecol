@@ -3,7 +3,7 @@
 #' This function loads a vector or string of type character and tidies the text
 #'
 #' @param text_vector Choose character vector or string
-#' @param level Do you want the text to receive a simple or full clean. Default to 'simple'
+#' @param level Do you want the text to receive a simple or full clean. Defaults to 'simple' which includes the following cleaning processes: hashtags, twitter specific syntax, urls, emoticons, specials (punctuation and digits). 'full' uses all processes.
 #' @param hashtag Do you want to convert common multi-word hashtags into a split string of words e.g. #TrophyHunting = Trophy Hunting. Defaults to TRUE
 #' @param twitter_syn Do you want to remove twitter specific terms e.g. RTs
 #' @param abbrev Do you want to convert abbreviations into their expanded form. Defaults to TRUE
@@ -14,6 +14,9 @@
 #' @param url Do you want to remove urls. Defaults to TRUE
 #' @param special_other Do you want to remove any remaining special characters, punctions and numbers. Defaults to TRUE
 #' @return A character vector or string
+#'
+#'
+#'
 #' @examples
 #' clean("cat :(")
 #' clean(c("2moro", ":/"))

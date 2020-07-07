@@ -21,7 +21,7 @@ clean(
 \arguments{
 \item{text_vector}{Choose character vector or string}
 
-\item{level}{Do you want the text to receive a simple or full clean. Default to 'simple'}
+\item{level}{Do you want the text to receive a simple or full clean. Defaults to 'simple' which includes the following cleaning processes: hashtags, twitter specific syntax, urls, emoticons, specials (punctuation and digits). 'full' uses all processes.}
 
 \item{hashtag}{Do you want to convert common multi-word hashtags into a split string of words e.g. #TrophyHunting = Trophy Hunting. Defaults to TRUE}
 

@@ -9,17 +9,22 @@
 #'
 #' For join:
 #'
-#' Expert - An individual/group/business/lab employed to work with the environment or with qualifications describing expertise. F1 accuracy = 0.90
-#' Person (not expert) - An individual person not meeting the expert critera. F1 accuracy = 0.82
-#' Organisation/Group/Company/Other - Any account not meeting the above criteria. F1 accuracy = 0.75
+#' Expert - An individual/group/business/lab employed to work with the environment or with qualifications describing expertise. F1 accuracy = 0.90.
+#'
+#' Person (not expert) - An individual person not meeting the expert critera. F1 accuracy = 0.82.
+#'
+#' Organisation/Group/Company/Other - Any account not meeting the above criteria. F1 accuracy = 0.75.
 #'
 #'
 #' For split:
 #'
-#' Expert - An individual employed to work within the envionmental sciences or with qualifications describing expertise. F1 accuracy = 0.87
-#' Wildlife org - An Organisation/Group/Company working within an environmental area. F1 accuracy = 0.62
-#' Person (not expert) - An individual person not meeting the expert critera. F1 accuracy = 0.80
-#' Organisation/Group/Company/Other - Any account not meeting the above criteria. F1 accuracy = 0.77
+#' Expert - An individual employed to work within the envionmental sciences or with qualifications describing expertise. F1 accuracy = 0.87.
+#'
+#' Wildlife org - An Organisation/Group/Company working within an environmental area. F1 accuracy = 0.62.
+#'
+#' Person (not expert) - An individual person not meeting the expert critera. F1 accuracy = 0.80.
+#'
+#' Organisation/Group/Company/Other - Any account not meeting the above criteria. F1 accuracy = 0.77.
 #'
 #'
 #' @examples
@@ -30,9 +35,9 @@ bio_class = function(type = "join",
                      directory){
   save_dic = getwd()
   if(type == "join"){
-    reticulate::py_run_file(paste(directory,"bio_wldexjoin_rapid_pred.py", sep = ""))
+    py_run_file(paste(directory,"bio_wldexjoin_rapid_pred.py", sep = ""))
   } else if (type == "split"){
-    reticulate::py_run_file(paste(directory,"bio_all_rapid_pred.py", sep = ""))
+    py_run_file(paste(directory,"bio_all_rapid_pred.py", sep = ""))
   } else {
     stop("Please specify a valid type: join or split")
   }
