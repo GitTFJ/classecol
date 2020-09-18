@@ -36,7 +36,7 @@ hun_class = function(type = "full H",
   } else if (type == "stance H"){
     py_run_file(paste(directory,"hunt_stance_rapid_h_pred.py", sep = ""))
   } else if (type == "full FH"){
-    py_run_file(paste(directory,"hunt_rapid_rapid_pred.py", sep = ""))
+    py_run_file(paste(directory,"hunt_all_rapid_pred.py", sep = ""))
   } else if (type == "stance FH"){
     py_run_file(paste(directory,"hunt_stance_rapid_pred.py", sep = ""))
   } else {
