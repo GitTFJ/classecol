@@ -42,6 +42,7 @@ At this point we are ready to prepare and classify the data. The biographical cl
 ```{r, warning = FALSE, error = FALSE, message = FALSE}
 df = data.frame(
   name = c(
+<<<<<<< HEAD
     "John Doe ",
     "Thomas Frederick Johnson",
     "Fictional University"),
@@ -49,6 +50,17 @@ df = data.frame(
   "Business leader, banker, parent, and cyclist", 
   "Ecology and conservation researcher", 
   "Campus life and study at the Fictional University. Follow for news and updates"))
+=======
+    "Boris Johnson #StayAlert",
+    "Thomas Frederick Johnson",
+    "University of Reading"),
+  description = c(
+  "Prime Minister of the United Kingdom and @Conservatives leader. 
+  Member of Parliament for Uxbridge and South Ruislip. #StayAlert", 
+  "Researching carnivores and macroecology. Interested in 
+  #Ecology #Birds #LFC #Politics #DataScience", 
+  "Campus life and study at the University of Reading, UK. For news and comment follow @UniRdg_News"))
+>>>>>>> 658b6a5cce445c174a432c28a9007a12cd710cc7
 df$text = paste(df$name, df$description)
 data = reticulate::r_to_py(df)
 bio_class(
