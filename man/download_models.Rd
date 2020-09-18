@@ -15,3 +15,6 @@ A character vector or string
 \description{
 This function downloads the required models to run the classecol package
 }
+\examples{
+download_models("user_specified_directory")
+}

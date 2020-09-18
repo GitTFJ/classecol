@@ -4,7 +4,7 @@
 #'
 #' @param location Choose a filepath to save the classification models
 #' @return A character vector or string
-#' @examples
+#' @examples download_models("user_specified_directory")
 #' @export
 
 download_models = function(location){
