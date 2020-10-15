@@ -7,13 +7,13 @@ output: pdf_document
 
 # classecol
 
-classecol is a package to perform text classifications of twitter data (but may be useful for any social media text). It provides a series of functions to clean data, produces a sentiment matrix of some of the most popular methods, and has three models to classify text: biographical - to assess who the user is, environment - to assess if the tweet is related to their environment at the users stance on the enviornment, hunting - to assess if the tweet is related to hunting and determine their stance on hunting.
+classecol is a package to perform nature-related text classifications of public opinion data (trained using twitter data). classecol provides a series of functions which can clean data, pull together outputs from multiple sentiment analysis approaches into one function, and has three models to classify text: bio - to assess who the user is e.g. a person, expert, nature organisation, or something else; nature - to assess if the tweet is relevant to nature (or the natural world), and if so, describe whether the tweet is showing concern, interest or fear; hunting - to assess if the tweet is relevant to hunting, and if so, describe whether the tweet is pro- or against-hunting.
 
-## Intstructions to prepare package
+## Instructions to prepare package
 
-This package is runs through R but is reliant on a python back-end (which dramitcally improves the speed of the classification). So before running any code, you will need to install a version of python - we recommend Python 3.6.9 which is what the package has been tested on; available [here](https://www.python.org/downloads/release/python-369/). You will also need to install a selection of packages on python: numpy, os, pandas, re, nltk, bs4, string, joblib, pickle, sklearn, keras, tensorflow, and time. Packages can be installed following these [instructions](https://packaging.python.org/tutorials/installing-packages/). If at anypoint the error 'Module not found' appears, install this module/package following these ihe above instructions.
+This package is runs through R but is reliant on a python back-end (which dramitcally improves the speed of the classification). So before running any code, you will need to install a version of python - we recommend Python 3.6.9 which is what the package has been tested on; available [here](https://www.python.org/downloads/release/python-369/). You will also need to install a selection of packages on python: numpy, os, pandas, re, nltk, bs4, string, joblib, pickle, sklearn, keras, tensorflow, and time. Packages can be installed following these [instructions](https://packaging.python.org/tutorials/installing-packages/). If at anypoint the error 'Module not found' appears, install the listed module/package following the above instructions.
 
-classecol is only available as a github repository so needs to be installed through github
+The most recent and throughly tested version of classecol is only available as a github repository so needs to be installed through github
 ```{r, warning = FALSE, error = FALSE, message = FALSE}
 library(devtools)
 install_github("GitTFJ/classecol", upgrade = "never")
@@ -21,55 +21,28 @@ library(classecol)
 library(reticulate)
 ```
 
-classecol is not self-contained is alos reliant on a prtner repository which stores the python models and code. This section of code will download the accompanying repository and save it into a specified location
+The python text classification models which classecol rely's on are not autoatically downloaded when the package is installed. Instead, its necassary to download and save an additional github repository, which is automated through the 'download_models' function. To encuorage a seamless use of classecol, we recommend storing these models alongside the classecol package, which can found locally using the 'find.package' function.
 ```{r, warning = FALSE, error = FALSE, message = FALSE}
 direc = paste(find.package("classecol"),"/models", sep = "")
 download_models(direc)
 ```
 
-In order to model the text file, we need to link R to the python program. 'reticulate' offers a function to perform this, but we found it performed incosistently, so require manuallly specifying pythons absolute filepath location. the file to search for is 'python.exe'. 
+'reticulate' offers a function to link the R classecol package to the python backend which contains the classification models. However, this automated function can perform inconsistantly, so recommend manuallly specifying pythons absolute filepath location. The file to search for is 'python.exe'. 
 
 You will also need to specify the location you have downloaded the models to and then send this location to python with the function 'r_to_py'
 ```{r, warning = FALSE, error = FALSE, message = FALSE}
 #Specify your own path!!!
-reticulate::use_python("C:/Users/mn826766/AppData/Local/Continuum/anaconda3/python.exe") 
+reticulate::use_python("C:User/Python/python.exe") 
 direc = paste(direc, "/classecol-models-master/", sep = "")
 model_directory = reticulate::r_to_py(direc)
 ```
 
-## Biographical classifier
-At this point we are ready to prepare and classify the data. The biographical classifier 'bio_class()' works best with twitter data in its dirty form, so none of the text should be cleaned. However, it is neccasary to join the twitter name and description into one column named 'text' split with a space. if the column is named anything but 'text' with a dataframe named 'data' the download will fail.
-```{r, warning = FALSE, error = FALSE, message = FALSE}
-df = data.frame(
-  name = c(
-<<<<<<< HEAD
-    "John Doe ",
-    "Thomas Frederick Johnson",
-    "Fictional University"),
-  description = c(
-  "Business leader, banker, parent, and cyclist", 
-  "Ecology and conservation researcher", 
-  "Campus life and study at the Fictional University. Follow for news and updates"))
-=======
-    "Boris Johnson #StayAlert",
-    "Thomas Frederick Johnson",
-    "University of Reading"),
-  description = c(
-  "Prime Minister of the United Kingdom and @Conservatives leader. 
-  Member of Parliament for Uxbridge and South Ruislip. #StayAlert", 
-  "Researching carnivores and macroecology. Interested in 
-  #Ecology #Birds #LFC #Politics #DataScience", 
-  "Campus life and study at the University of Reading, UK. For news and comment follow @UniRdg_News"))
->>>>>>> 658b6a5cce445c174a432c28a9007a12cd710cc7
-df$text = paste(df$name, df$description)
-data = reticulate::r_to_py(df)
-bio_class(
-  type = "trimmed expert",
-  directory = direc)
-```
+
+
+At this point we are ready to prepare and classify the data. It is very important that all naming conventions are matched, otherwise the classification will fail e.g. the text needs to be in a column called 'text', in a dataframe called 'df', and assigned as 'data' using the 'reticulate::r_to_py' function. See below.
 
 ## Hunting classifier
-The hunting classifier 'hun_class()' works best with twitter data after a simple clean. if the column is named anything but 'text' with a dataframe named 'data' the download will fail.
+The hunting classifier 'hun_class()' works best with twitter data after a simple clean. 
 ```{r, warning = FALSE, error = FALSE, message = FALSE}
 df = data.frame(
   text = c(
@@ -79,12 +52,13 @@ df = data.frame(
 df$text = classecol::clean(df$text, level = "simple")
 data = reticulate::r_to_py(df)
 hun_class(
-  type = "full H",
+  type = "Full",
   directory = direc)
 ```
 
-## Environment classifier
-The environment classifier 'nat_class()' works best with twitter data after a full clean and also requires sentiment analysis on the text. if the column is named anything but 'text' with a dataframe named 'data' the download will fail.
+
+## Nature classifier
+The environment classifier 'nat_class()' works best with twitter data after a full clean and also requires sentiment analysis on the text.
 ```{r, warning = FALSE, error = FALSE, message = FALSE}
 df = data.frame(
   text = c(
@@ -99,8 +73,26 @@ sm = as.matrix(cbind(
 data = reticulate::r_to_py(df)
 sent_mat = reticulate::r_to_py(sm)
 nat_class(
-  type = "trimmed",
+  type = "Trimmed",
   directory = direc)
 ```
 
 
+## Bio classifier
+The biographical classifier 'bio_class()' works best with twitter data in its raw form, so none of the text should be cleaned. However, it is neccasary to join the twitter name and description into one column named 'text' split with a space. 
+```{r, warning = FALSE, error = FALSE, message = FALSE}
+df = data.frame(
+  name = c(
+    "Jane Doe ",
+    "Thomas Frederick Johnson",
+    "Fictional University"),
+  description = c(
+  "Business leader, banker, parent, and cyclist", 
+  "Ecology and conservation researcher", 
+  "Campus life and study at the Fictional University. Follow for news and updates"))
+df$text = paste(df$name, df$description)
+data = reticulate::r_to_py(df)
+bio_class(
+  type = "Full",
+  directory = direc)
+```
