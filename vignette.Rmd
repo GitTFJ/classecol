@@ -46,8 +46,8 @@ The hunting classifier 'hun_class()' works best with twitter data after a simple
 ```{r, warning = FALSE, error = FALSE, message = FALSE}
 df = data.frame(
   text = c(
-    "I hate hunting", 
-    "Cant wait to go hunting", 
+    "I hate hunting. Ban it now!", 
+    "Cant wait to go camping this weekend #hunting #fishing", 
     "Hunting for my car keys"))
 df$text = classecol::clean(df$text, level = "simple")
 data = reticulate::r_to_py(df)
@@ -58,12 +58,12 @@ hun_class(
 
 
 ## Nature classifier
-The environment classifier 'nat_class()' works best with twitter data after a full clean and also requires sentiment analysis on the text.
+The nature classifier 'nat_class()' works best with twitter data after a full clean and also requires sentiment analysis on the text.
 ```{r, warning = FALSE, error = FALSE, message = FALSE}
 df = data.frame(
   text = c(
-    "I love walking in nature", 
-    "I am so sad we losing the rainforest. stop the destruction", 
+    "I love walking in nature - so serene", 
+    "Why are the government not stopping the destruction of the rainforest?!", 
     "Tiger wins the PGA tour again!"))
 df$text = classecol::clean(df$text, level = "full")
 sm = as.matrix(cbind(
