@@ -27,7 +27,7 @@ hun_class = function(type = "Full",
                      directory){
   save_dic = getwd()
   if(type == "Full"){
-    py_run_file(paste(directory,"hunt_all_rapid_h_pred.py", sep = ""))
+    py_run_file(paste(directory,"hunt_all_rapid_pred.py", sep = ""))
   } else if (type == "Relevance"){
     py_run_file(paste(directory,"hunt_relevance_rapid_pred.py", sep = ""))
   } else if (type == "Stance"){
