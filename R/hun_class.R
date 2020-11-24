@@ -15,7 +15,7 @@
 #'
 #'
 #'
-#' Full classifications (0.86 accuracy): Irrelevant, Against-hunting, Pro-hunting
+#' Full classifications (0.87 accuracy): Irrelevant, Against-hunting, Pro-hunting
 #'
 #'
 #'
