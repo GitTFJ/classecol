@@ -1,8 +1,10 @@
 ---
-title: "classecol: vignette"
-author: "Thomas Frederick Johnson Github: GitTFJ"
+title: 'classecol: vignette'
+author: 'Thomas Frederick Johnson Github: GitTFJ'
 date: "6 July 2020"
-output: pdf_document
+output:
+  html_document:
+    df_print: paged
 ---
 
 # classecol
@@ -16,7 +18,7 @@ This package is run through R but is reliant on a python back-end (which dramitc
 The most recent and throughly tested version of classecol is only available as a github repository so needs to be installed through github
 ```{r, warning = FALSE, error = FALSE, message = FALSE}
 library(devtools)
-install_github("GitTFJ/classecol", upgrade = "never")
+#install_github("GitTFJ/classecol")
 library(classecol)
 library(reticulate)
 ```
