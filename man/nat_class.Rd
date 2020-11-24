@@ -4,10 +4,10 @@
 \alias{nat_class}
 \title{Nature classifications of tweets}
 \usage{
-nat_class(type = "trimmed", directory)
+nat_class(type = "Trimmed", directory)
 }
 \arguments{
-\item{type}{Text can be run through four different models: "trimmed"(default), "full", "relevance", and "stance". See 'Value' for details.}
+\item{type}{Text can be run through four different models: "Trimmed"(default), "Full", "Relevance", and "Stance". See 'Value' for details.}
 
 \item{directory}{Choose directory containing models sourced from download_models function}
 }
@@ -16,20 +16,20 @@ A character vector of classifications.
 
 
 
-trimmed classifications (0.82 accuracy): Irrelevant, Pro-nature positive phrasing, Pro-nature negative phrasing
+Trimmed classifications (0.82 accuracy): Irrelevant, Pro-nature positive phrasing, Pro-nature negative phrasing
 
 
-full classifications (0.81 accuracy): Irrelevant, Pro-nature positive phrasing, Pro-nature negative phrasing, Against-nature
+Full classifications (0.81 accuracy): Irrelevant, Pro-nature positive phrasing, Pro-nature negative phrasing, Against-nature
 
 
-relevance classifications (0.90 accuracy): Irrelevant, Relevant
+Relevance classifications (0.90 accuracy): Irrelevant, Relevant
 
 
-stance classifications (0.92 accuracy): Pro-nature positive phrasing, Pro-nature negative phrasing
+Stance classifications (0.92 accuracy): Pro-nature positive phrasing, Pro-nature negative phrasing
 }
 \description{
 This function recevies a vector of tweets, and produces classifications that describe the tweets stance on nature. Classification accuracy ~80%
 }
 \examples{
-nat_class(type = "trimmed", directory = "models/classecol-models-master/")
+nat_class(type = "Trimmed", directory = "models/classecol-models-master/")
 }

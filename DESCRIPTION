@@ -19,6 +19,6 @@ Imports:
 Remotes:
         trinker/lexicon,
         trinker/qdap
-RoxygenNote: 7.1.0
+RoxygenNote: 7.1.1
 Depends: 
     R (>= 2.10)

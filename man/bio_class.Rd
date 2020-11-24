@@ -4,10 +4,10 @@
 \alias{bio_class}
 \title{Biographical classifications of twitter users}
 \usage{
-bio_class(type = "full", directory)
+bio_class(type = "Full", directory)
 }
 \arguments{
-\item{type}{Text can be run through three different models: "full"(default), "trimmed person", and "trimmed expert". See 'Value' for details.}
+\item{type}{Text can be run through three different models: "Full"(default), "Person", and "Expert". See 'Value' for details.}
 
 \item{directory}{Choose directory containing models sourced from download_models function}
 }
@@ -16,17 +16,17 @@ A character vector of classifications.
 
 
 
-full classifications (0.79 accuracy): Expert, Person, Organisations, Nature-organisation
+Full classifications (0.79 accuracy): Expert, Person, Other, Nature organisation
 
 
-trimmed person classifications (0.87 accuracy): Person, Organisations
+Person classifications (0.87 accuracy): Person, Other
 
 
-trimmed expert (0.84 accuracy): Expert, Person, Organisations
+Expert (0.94 accuracy): Expert, Person
 }
 \description{
 This function recevies a vector of screen names and user bios, and produces classifications that describe the user. Classification accuracy ~80%
 }
 \examples{
-bio_class(type = "full", directory = "models/classecol-models-master/")
+bio_class(type = "Full", directory = "models/classecol-models-master/")
 }
