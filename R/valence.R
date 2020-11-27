@@ -44,7 +44,7 @@ valence = function(text_vector){
   tmp_df = ifelse(tmp_df$Count > 1, 1, tmp_df$Count)
   deamp = tmp_df
 
-  tmp = NULL
+  tmp_df = NULL
   for(a in 1:length(ad_con)){
     tmp = ifelse(grepl(ad_con[a], text_vector), 1, 0)
     tmp_df = cbind(tmp_df, tmp)
