@@ -34,7 +34,7 @@ load_classecol = function(
   }
   if(link_py == T){
     message("Linking python to R...")
-    link_python()
+    addeR::link_python()
     model_directory = reticulate::r_to_py(direc)
   } else {
     model_directory = reticulate::r_to_py(direc)
