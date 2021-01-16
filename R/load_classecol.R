@@ -42,5 +42,4 @@ load_classecol = function(
   return(paste0("We connected to ", reticulate::py_config()[1]))
 }
 
-load_classecol(download_models = F, download_modules = F, link_py = T)
 
