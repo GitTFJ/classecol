@@ -29,11 +29,11 @@ bio_class = function(text_vector,
     directory = paste(find.package("classecol"),"/models/classecol-models-master/", sep = "")
   save_dic = getwd()
   if(type == "full"){
-    py_run_file(paste(directory,"bio_all_rapid_pred.py", sep = ""))
+    reticulate::py_run_file(paste(directory,"bio_all_rapid_pred.py", sep = ""))
   } else if (type == "person"){
-    py_run_file(paste(directory,"bio_per_org_rapid_pred.py", sep = ""))
+    reticulate::py_run_file(paste(directory,"bio_per_org_rapid_pred.py", sep = ""))
   } else if (type == "expert"){
-    py_run_file(paste(directory,"bio_per_exp_rapid_pred.py", sep = ""))
+    reticulate::py_run_file(paste(directory,"bio_per_exp_rapid_pred.py", sep = ""))
   } else {
     stop("Please specify a valid type")
   }

@@ -39,13 +39,13 @@ nat_class = function(text_vector,
     directory = paste(find.package("classecol"),"/models/classecol-models-master/", sep = "")
     save_dic = getwd()
     if(type == "trimmed"){
-      py_run_file(paste(directory,"nat_all(not_against)_rapid_pred.py", sep = ""))
+      reticulate::py_run_file(paste(directory,"nat_all(not_against)_rapid_pred.py", sep = ""))
     } else if (type == "full"){
-      py_run_file(paste(directory,"nat_all_rapid_pred.py", sep = ""))
+      reticulate::py_run_file(paste(directory,"nat_all_rapid_pred.py", sep = ""))
     } else if (type == "relevance"){
-      py_run_file(paste(directory,"nat_relevance_rapid_pred.py", sep = ""))
+      reticulate::py_run_file(paste(directory,"nat_relevance_rapid_pred.py", sep = ""))
     } else if (type == "stance"){
-      py_run_file(paste(directory,"nat_stance_rapid_pred.py", sep = ""))
+      reticulate::py_run_file(paste(directory,"nat_stance_rapid_pred.py", sep = ""))
     } else {
       stop("Please specify a valid type")
     }

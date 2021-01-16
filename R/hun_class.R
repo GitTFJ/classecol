@@ -30,11 +30,11 @@ hun_class = function(text_vector, type = "full"){
     directory = paste(find.package("classecol"),"/models/classecol-models-master/", sep = "")
     save_dic = getwd()
     if(type == "full"){
-      py_run_file(paste(directory,"hunt_all_rapid_pred.py", sep = ""))
+      reticulate::py_run_file(paste(directory,"hunt_all_rapid_pred.py", sep = ""))
     } else if (type == "relevance"){
-      py_run_file(paste(directory,"hunt_relevance_rapid_pred.py", sep = ""))
+      reticulate::py_run_file(paste(directory,"hunt_relevance_rapid_pred.py", sep = ""))
     } else if (type == "stance"){
-      py_run_file(paste(directory,"hunt_stance_rapid_h_pred.py", sep = ""))
+      reticulate::py_run_file(paste(directory,"hunt_stance_rapid_h_pred.py", sep = ""))
     } else {
       stop("Please specify a valid type")
     }
