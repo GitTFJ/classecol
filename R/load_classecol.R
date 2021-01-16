@@ -37,6 +37,5 @@ load_classecol = function(
   } else {
   }
   message("Again, classecol is reliant on Java 8 or above. Install Java from: https://www.java.com/en/download/")
-  message(paste0("We connected to ", reticulate::py_config()[1]))
 }
 
