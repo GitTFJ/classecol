@@ -4,32 +4,34 @@
 \alias{nat_class}
 \title{Nature classifications of tweets}
 \usage{
-nat_class(type = "Trimmed", directory)
+nat_class(text_vector, senti, type = "full")
 }
 \arguments{
-\item{type}{Text can be run through four different models: "Trimmed"(default), "Full", "Relevance", and "Stance". See 'Value' for details.}
+\item{text_vector}{Character vector of text data}
 
-\item{directory}{Choose directory containing models sourced from download_models function}
+\item{senti}{A 16 column matrix, derived from valence (4 columns), lang_eng (1 column), and senti_matrix (11 columns). This matrix requires an equal number of observations to the text_vector. See vignette for an example}
+
+\item{type}{Text can be run through four different models: "trimmed"(default), "full", "relevance", and "stance". See 'Value' for details.}
 }
 \value{
 A character vector of classifications.
 
 
 
-Trimmed classifications (0.82 accuracy): Irrelevant, Pro-nature positive phrasing, Pro-nature negative phrasing
+trimmed classifications (0.82 accuracy): Irrelevant, Pro-nature positive phrasing, Pro-nature negative phrasing
 
 
-Full classifications (0.81 accuracy): Irrelevant, Pro-nature positive phrasing, Pro-nature negative phrasing, Against-nature
+full classifications (0.81 accuracy): Irrelevant, Pro-nature positive phrasing, Pro-nature negative phrasing, Against-nature
 
 
-Relevance classifications (0.90 accuracy): Irrelevant, Relevant
+relevance classifications (0.90 accuracy): Irrelevant, Relevant
 
 
-Stance classifications (0.92 accuracy): Pro-nature positive phrasing, Pro-nature negative phrasing
+stance classifications (0.92 accuracy): Pro-nature positive phrasing, Pro-nature negative phrasing
 }
 \description{
 This function recevies a vector of tweets, and produces classifications that describe the tweets stance on nature. Classification accuracy ~80%
 }
 \examples{
-nat_class(type = "Trimmed", directory = "models/classecol-models-master/")
+nat_class(type = "trimmed", directory = "models/classecol-models-master/")
 }

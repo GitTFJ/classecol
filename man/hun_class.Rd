@@ -4,30 +4,30 @@
 \alias{hun_class}
 \title{Hunting classifications of tweets}
 \usage{
-hun_class(type = "Full", directory)
+hun_class(text_vector, type = "full")
 }
 \arguments{
-\item{type}{Text can be run through three different models: "Full" (default), "Relevance", and "Stance". See 'Value' for details.}
+\item{text_vector}{Character vector of text data}
 
-\item{directory}{Choose directory containing models sourced from download_models function}
+\item{type}{Text can be run through three different models: "full" (default), "relevance", and "stance". See 'Value' for details.}
 }
 \value{
 A character vector of classifications.
 
 
-Relevance classifications (0.89 accuracy): Irrelevant, Relevant
+relevance classifications (0.89 accuracy): Irrelevant, Relevant
 
 
 
-Stance classifications (0.99 accuracy): Against-hunting, Pro-hunting
+stance classifications (0.99 accuracy): Against-hunting, Pro-hunting
 
 
 
-Full classifications (0.87 accuracy): Irrelevant, Against-hunting, Pro-hunting
+full classifications (0.87 accuracy): Irrelevant, Against-hunting, Pro-hunting
 }
 \description{
 This function recevies a vector of tweets, and produces classifications that describe the tweets stance on hunting. Classification accuracy ~85%
 }
 \examples{
-hun_class(type = "Full", directory = "models/classecol-models-master/")
+hun_class(text_vector = df$text, type = "full")
 }

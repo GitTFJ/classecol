@@ -4,29 +4,29 @@
 \alias{bio_class}
 \title{Biographical classifications of twitter users}
 \usage{
-bio_class(type = "Full", directory)
+bio_class(text_vector, type = "full")
 }
 \arguments{
-\item{type}{Text can be run through three different models: "Full"(default), "Person", and "Expert". See 'Value' for details.}
+\item{text_vector}{Character vector of text data describing the the combination of names and descriptions}
 
-\item{directory}{Choose directory containing models sourced from download_models function}
+\item{type}{Text can be run through three different models: "full"(default), "person", and "expert". See 'Value' for details.}
 }
 \value{
 A character vector of classifications.
 
 
 
-Full classifications (0.79 accuracy): Expert, Person, Other, Nature organisation
+full classifications (0.79 accuracy): Expert, Person, Other, Nature organisation
 
 
-Person classifications (0.87 accuracy): Person, Other
+person classifications (0.87 accuracy): Person, Other
 
 
-Expert (0.94 accuracy): Expert, Person
+expert classifications (0.94 accuracy): Expert, Person
 }
 \description{
 This function recevies a vector of screen names and user bios, and produces classifications that describe the user. Classification accuracy ~80%
 }
 \examples{
-bio_class(type = "Full", directory = "models/classecol-models-master/")
+hun_class(text_vector = df$text, type = "full")
 }
