@@ -12,7 +12,6 @@ Imports:
         qdap, 
         addeR,
         stringr,
-        reticulate,
         cld2,
         sentimentr,
         textstem,

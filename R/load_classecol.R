@@ -5,7 +5,6 @@
 #' @param download_models Confirm whether the classecol python models should be downloaded (TRUE) or not (FALSE)
 #' @param download_modules Confirm whether thepython modules should be downloaded (TRUE) or not (FALSE)
 #' @param link_py Link python to R, select TRUE or FALSE
-#' @param directory Choose directory containing models sourced from download_models function
 #' @return No product returned.
 
 #' @examples

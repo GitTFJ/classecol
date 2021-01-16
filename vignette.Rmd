@@ -20,8 +20,6 @@ The most recent and throughly tested version of classecol is only available as a
 library(devtools)
 install_github("GitTFJ/classecol")
 library(classecol)
-library(addeR)
-library(reticulate)
 ```
 
 classecol has three core themes: text cleaning and processing, sentiment analysis, and supervised text classification
