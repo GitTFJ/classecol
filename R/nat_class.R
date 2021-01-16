@@ -31,12 +31,16 @@ nat_class = function(text_vector,
                      type = "full"){
   if(ncol(senti) != 16 ){
     stop("senti, the sentiment matrix must be a matrix with 16 columns and an equal number of observations to the text_vector") } else {
-      sent_mat = reticulate::r_to_py(senti)
+      senti_tmp = reticulate::r_to_py(senti)
+      list2env(list(sent_mat = reticulate::r_to_py(senti_tmp)), envir = .GlobalEnv)
     }
   if(is.vector(text_vector)){
     tmp_df = data.frame(text = text_vector)
-    data = reticulate::r_to_py(tmp_df)
+    dat = reticulate::r_to_py(tmp_df)
+    list2env(list(data = dat), envir = .GlobalEnv)
     directory = paste(find.package("classecol"),"/models/classecol-models-master/", sep = "")
+    model_directory = reticulate::r_to_py(directory)
+    assign("model_directory", model_directory, envir = .GlobalEnv)
     save_dic = getwd()
     if(type == "trimmed"){
       reticulate::py_run_file(paste(directory,"nat_all(not_against)_rapid_pred.py", sep = ""))

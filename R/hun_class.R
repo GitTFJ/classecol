@@ -26,8 +26,11 @@
 hun_class = function(text_vector, type = "full"){
   if(is.vector(text_vector)){
     tmp_df = data.frame(text = text_vector)
-    data = reticulate::r_to_py(tmp_df)
+    dat = reticulate::r_to_py(tmp_df)
+    list2env(list(data = dat), envir = .GlobalEnv)
     directory = paste(find.package("classecol"),"/models/classecol-models-master/", sep = "")
+    model_directory = reticulate::r_to_py(directory)
+    assign("model_directory", model_directory, envir = .GlobalEnv)
     save_dic = getwd()
     if(type == "full"){
       reticulate::py_run_file(paste(directory,"hunt_all_rapid_pred.py", sep = ""))

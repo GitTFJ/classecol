@@ -34,12 +34,9 @@ load_classecol = function(
   if(link_py == T){
     message("Linking python to R...")
     addeR::link_python()
-    model_directory = reticulate::r_to_py(direc)
   } else {
-    model_directory = reticulate::r_to_py(direc)
   }
   message("Again, classecol is reliant on Java 8 or above. Install Java from: https://www.java.com/en/download/")
-  return(paste0("We connected to ", reticulate::py_config()[1]))
+  message(paste0("We connected to ", reticulate::py_config()[1]))
 }
-
 
