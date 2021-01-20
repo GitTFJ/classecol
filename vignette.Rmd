@@ -20,7 +20,6 @@ The most recent and throughly tested version of classecol is only available as a
 library(devtools)
 install_github("GitTFJ/classecol")
 library(classecol)
-library(addeR)
 library(reticulate)
 ```
 
@@ -83,7 +82,9 @@ The classecol package's supervised text classification is run through R but is r
 
 Step 1 of this process can be automated using the addeR py:download() function, which downloads the recommended version of python. This function will download python and prompt its install. In the first step of the install process, if prompted, we highly recommend selecting 'Add python to the PATH'. Then select the basic install and once complete, close the install window. At this point, you will be prompted to quit R. For the python install to be recognised by R, its important to quit and re-open R. This can be done at any convenient point in time, but must completed before any more text clasification functions are run.
 ```{r, warning = FALSE, error = FALSE, message = FALSE, results = "hide"}
-addeR::py_download()
+#If python is not downloaded, use the addeR package
+#library(addeR)
+#addeR::py_download() #Automatic python download
 ```
 
 
@@ -91,8 +92,10 @@ addeR::py_download()
 ###load_classecol()
 For steps 2 to 4, we provide a set of parameters to simplify the process through the load_classecol() function. This function prepares the python aspects of classecol automatically. The first time classecol is run, its important to set the parameters so download_models = T and download_modules = T. Once these steps have succesfully downloaded, their data will be permanently stored and they can be set as FALSE in future cases. The link_py parameter must be set as TRUE run every time a new R environment is opened.
 ```{r, warning = FALSE, error = FALSE, message = FALSE, results = "hide"}
-load_classecol(download_models = T, download_modules = T, link_py = T)
+#On the first run, set download_models = T and download_modules = T
+load_classecol(download_models = F, download_modules = F, link_py = T)
 ```
+
 
 At this point we are ready to prepare and classify the data.
 
@@ -111,9 +114,11 @@ hun_class(
 ```
 
 
+
 ## Nature classifier
 The nature classifier 'nat_class()' works best with twitter data after a full clean and also requires sentiment analysis on the text. The 'type' parameter within the 'nat_class()' function specifies the type of text classification model, options include: relevance - use this model when the objective is to identify if text is relevant (or not) to nature; stance - use this model on text relevant to nature, where the objective is to identify the stance of the text (positive- or negative phrasing); trimmed - use this model when the objective is to identify text that is relevant to nature, and when relevant, describe the stance, combining the relevance and stance steps into one model; full - use this model when the objective is to identify text that is relevant to hunting, and when relevant, describe the stance. full differs to the trimmed model, as the full model includes the low accuracy ‘Against-nature’ category. 
 ```{r, warning = FALSE, error = FALSE, message = FALSE}
+library(reticulate)
 df = data.frame(
   text = c(
     "I love walking in nature - so serene", 
@@ -141,12 +146,11 @@ df = data.frame(
     "Thomas Frederick Johnson",
     "Fictional University"),
   description = c(
-  "Business leader, banker, parent, and cyclist", 
-  "Ecology and conservation researcher", 
-  "Campus life and study at the Fictional University. Follow for news and updates"), 
+    "Business leader, banker, parent, and cyclist", 
+    "Ecology and conservation researcher", 
+    "Campus life and study at the Fictional University. Follow for news and updates"), 
   stringsAsFactors = F)
 bio_class(
   text_vector = paste(df$name, df$description),
   type = "full")
 ```
-
