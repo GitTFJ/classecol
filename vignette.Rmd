@@ -18,7 +18,7 @@ classecol is a package to perform nature-related text classifications of public 
 The most recent and throughly tested version of classecol is only available as a github repository so needs to be installed through github. Before installing classecol, we highly recommend installing the latest version of Java, which can be found at (https://www.java.com/en/download/)
 ```{r, warning = FALSE, error = FALSE, message = FALSE, results = "hide"}
 library(devtools)
-install_github("GitTFJ/classecol")
+#install_github("GitTFJ/classecol")
 library(classecol)
 library(reticulate)
 ```
