@@ -36,6 +36,7 @@ load_classecol = function(
     addeR::link_python()
     sys = reticulate::import("sys", convert = TRUE)
   } else {
+    sys = "Python not linked"
   }
   message("Again, classecol is reliant on Java 8 or above. Install Java from: https://www.java.com/en/download/")
   return(sys)
