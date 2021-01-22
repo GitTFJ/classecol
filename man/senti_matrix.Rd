@@ -13,7 +13,7 @@ senti_matrix(text_vector)
 A trimmed character vector or string
 }
 \description{
-This function loads a vector or string and produces a sentiment matrix with 11 lexicon metrics: jockers-rinker, jockers, hu-liu, loughran-mcdonald, sentinet, sentiword, socal-google, nrc, bing, afinn, and meanr
+This function loads a vector or string and produces a sentiment matrix with 12 lexicon metrics: jockers-rinker, jockers, hu-liu, loughran-mcdonald, sentinet, sentiword, sentimentr, socal-google, nrc, bing, afinn, and meanr
 }
 \examples{
 senti_matrix("hunting is really bad I hate it")
