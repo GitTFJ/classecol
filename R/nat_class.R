@@ -35,6 +35,9 @@ nat_class = function(text_vector,
       list2env(list(sent_mat = reticulate::r_to_py(senti_tmp)), envir = .GlobalEnv)
     }
   if(is.vector(text_vector)){
+    if((sum(nchar(text_vector)) < 5)>0){
+      warning("Some of the strings in your text_vector had less than five characters. This may negatively impact on the classifiers performance. Consider removing all short or empty strings") } else {
+      }
     tmp_df = data.frame(text = text_vector)
     dat = reticulate::r_to_py(tmp_df)
     list2env(list(data = dat), envir = .GlobalEnv)

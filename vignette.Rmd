@@ -119,7 +119,7 @@ rbind(
 ```
 
 ### contract()
-Performs stemming (trims word to their simplest form e.g. cars becomes car) and lemmatisation (identifies the core theme of a term, bringing synonymous terms into one word e.g. automobile becomes car) within R. Function is a wrapper for textstem (Rinker, 2018), qdap (Rinker, 2020), and lexicon (Rinker, 2019a) R packages. This function is not necessary when running any of the hun_class, nat_class, and bio_class models, as the stemming and lemmatisation are conducted within the substantially faster Python program. 
+Performs stemming (trims word to their simplest form e.g. cars becomes car) and lemmatisation (identifies the core theme of a term, bringing synonymous terms into one word e.g. automobile becomes car) within R. Function is a wrapper for textstem (Rinker, 2018), qdap (Rinker, 2020), and lexicon (Rinker, 2019b) R packages. This function is not necessary when running any of the hun_class, nat_class, and bio_class models, as the stemming and lemmatisation are conducted within the substantially faster Python program. 
 ```{r, warning = FALSE, error = FALSE, message = FALSE}
 contract("consulting")
 ```
@@ -132,7 +132,7 @@ lang_eng("hello and welcome to classecol")#English
 ```
 
 ### senti_matrix()
-Conducts sentiment analysis (assesses polarity of text) using 11 approaches and pulls all approaches into a matrix of sentiment. Approaches are drawn from the sentimentr (Rinker, 2019b), lexicon (Rinker, 2019a), syuzhet (Jockers, 2017), and meanr (Schmidt, 2019) R packages.
+Conducts sentiment analysis (assesses polarity of text) at the sentence level using 11 approaches, and pulls all approaches into a matrix of sentiment. Approaches are drawn from the syuzhet (Jockers, 2017), meanr (Schmidt, 2019), and sentimentr (Rinker, 2019a) R packages. The sentimentr approaches rely on the following lexicons: jockers-rinker, jockers, hu-liu, loughran-mcdonald, sentinet, sentiword, and socal-google - all sourced from the lexicon (Rinker, 2019b) R package. All of these sentimentr approaches follow sentimentr's augemented dictionary method, which consider valence shifts in the sentence (see Rinker, 2019a). Jockers is the default sentimentr lexicon.
 ```{r, warning = FALSE, error = FALSE, message = FALSE}
 rbind(
   senti_matrix("I love wildlife so much, This is the best day ever"),
@@ -140,3 +140,13 @@ rbind(
 
 ```
 
+
+
+#References
+Jockers, M. (2017). syuzhet: Extracts Sentiment and Sentiment-Derived Plot Arcs from Text. R CRAN repository.
+Ooms, J., & Sites, D. (2018). cld2: Google’s Compact Language Detector 2. R CRAN repository.
+Rinker, T. (2018). textstem: Tools for Stemming and Lemmatizing Text. R CRAN repository.
+Rinker, T. (2019a). sentimentr: Calculate Text Polarity Sentiment. R CRAN repository.
+Rinker, T. (2019b). lexicon: Lexicons for Text Analysis. R CRAN repository.
+Rinker, T. (2020). qdap: Bridging the Gap Between Qualitative Data and Quantitative Analysis. R CRAN repository.
+Schmidt, D. (2019). meanr: Sentiment Analysis Scorer. R CRAN repository.
