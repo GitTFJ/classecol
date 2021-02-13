@@ -32,7 +32,7 @@ addeR::py_download() #Automatic python download
 ```
 
 ###Setup - load_classecol()
-For steps 2 to 4, we provide a set of parameters to simplify the process through the load_classecol() function. This function prepares the python aspects of classecol automatically. The first time classecol is run, its important to set the parameters so download_models = T and download_modules = T. Once these steps have succesfully downloaded, their data will be permanently stored and they can be set as FALSE in future cases. The link_py parameter must be set as TRUE run every time a new R environment is opened, and once R and Python are succesfully linked, the text classification models are ready to be run.
+For steps 2 to 4, we provide a set of parameters to simplify the process through the load_classecol() function. This function prepares the python aspects of classecol automatically. The first time classecol is run, its important to set the parameters so download_models = T and download_modules = T. Once these steps have succesfully downloaded, their data will be permanently stored and they can be set as FALSE in future cases. The link_py parameter must be set as TRUE run every time a new R environment is opened, and once R and Python are succesfully linked, the text classification models are ready to be run. This link_py parameter will recommend possible python locations - one should be selected and entered into the pop-up window. If the pop-up window does not appear, ensure it is not hidden behind other open windows.
 ```{r, warning = FALSE, error = FALSE, message = FALSE, results = "hide"}
 load_classecol(download_models = T, download_modules = T, link_py = T)
 ```
@@ -144,9 +144,15 @@ rbind(
 
 #References
 Jockers, M. (2017). syuzhet: Extracts Sentiment and Sentiment-Derived Plot Arcs from Text. R CRAN repository.
+
 Ooms, J., & Sites, D. (2018). cld2: Google’s Compact Language Detector 2. R CRAN repository.
+
 Rinker, T. (2018). textstem: Tools for Stemming and Lemmatizing Text. R CRAN repository.
+
 Rinker, T. (2019a). sentimentr: Calculate Text Polarity Sentiment. R CRAN repository.
+
 Rinker, T. (2019b). lexicon: Lexicons for Text Analysis. R CRAN repository.
+
 Rinker, T. (2020). qdap: Bridging the Gap Between Qualitative Data and Quantitative Analysis. R CRAN repository.
+
 Schmidt, D. (2019). meanr: Sentiment Analysis Scorer. R CRAN repository.
