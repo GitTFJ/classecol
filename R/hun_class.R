@@ -36,11 +36,11 @@ hun_class = function(text_vector, type = "full"){
     assign("model_directory", model_directory, envir = .GlobalEnv)
     save_dic = getwd()
     if(type == "full"){
-      reticulate::py_run_file(paste(directory,"hunt_all_rapid_pred.py", sep = ""))
+      py = reticulate::py_run_file(paste(directory,"hunt_all_rapid_pred.py", sep = ""))
     } else if (type == "relevance"){
-      reticulate::py_run_file(paste(directory,"hunt_relevance_rapid_pred.py", sep = ""))
+      py = reticulate::py_run_file(paste(directory,"hunt_relevance_rapid_pred.py", sep = ""))
     } else if (type == "stance"){
-      reticulate::py_run_file(paste(directory,"hunt_stance_rapid_h_pred.py", sep = ""))
+      py = reticulate::py_run_file(paste(directory,"hunt_stance_rapid_h_pred.py", sep = ""))
     } else {
       stop("Please specify a valid type")
     }

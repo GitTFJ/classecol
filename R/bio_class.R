@@ -35,11 +35,11 @@ bio_class = function(text_vector,
     assign("model_directory", model_directory, envir = .GlobalEnv)
   save_dic = getwd()
   if(type == "full"){
-    reticulate::py_run_file(paste(directory,"bio_all_rapid_pred.py", sep = ""))
+    py = reticulate::py_run_file(paste(directory,"bio_all_rapid_pred.py", sep = ""))
   } else if (type == "person"){
-    reticulate::py_run_file(paste(directory,"bio_per_org_rapid_pred.py", sep = ""))
+    py = reticulate::py_run_file(paste(directory,"bio_per_org_rapid_pred.py", sep = ""))
   } else if (type == "expert"){
-    reticulate::py_run_file(paste(directory,"bio_per_exp_rapid_pred.py", sep = ""))
+    py = reticulate::py_run_file(paste(directory,"bio_per_exp_rapid_pred.py", sep = ""))
   } else {
     stop("Please specify a valid type")
   }
