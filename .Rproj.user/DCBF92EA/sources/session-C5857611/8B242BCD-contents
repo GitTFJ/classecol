@@ -1,0 +1,573 @@
+library(dplyr)
+library(rotl)
+library(data.table)
+library(ggplot2)
+library(rnaturalearth)
+library(rnaturalearthdata)
+library(RColorBrewer)
+library(ggtree)
+library(ggtreeExtra)
+library(ggnewscale)
+library(phytools)
+library(lme4)
+library(brms)
+library(INLA)
+
+rsq = function (x, y) {
+  cor(x, y) ^ 2
+}
+
+expand.grid.alt = function(seq1,seq2) {
+  cbind(rep.int(seq1, length(seq2)),
+        c(t(matrix(rep.int(seq2, length(seq1)), nrow=length(seq2)))))
+}
+
+norm_range <- function(x){
+  (x-min(x))/(max(x)-min(x))
+}
+
+is.nan.data.frame <- function(x){
+  do.call(cbind, lapply(x, is.nan))
+}
+
+ts = read.csv("/Users/bo1tfj/Google Drive/research/stability_coherence/space_phy_time/data/combined_ts_V0.1.csv")
+tx = read.csv("/Users/bo1tfj/Google Drive/research/stability_coherence/space_phy_time/data/combined_tx_V0.1.csv")
+sp = read.csv("/Users/bo1tfj/Google Drive/research/stability_coherence/space_phy_time/data/combined_sp_V0.1.csv")
+
+ts = left_join(ts, tx)
+ts = left_join(ts, tx[,c(2,3)], by = "reported_taxa")
+ts$corrected_taxa = ifelse(is.na(ts$corrected_taxa.x), ts$corrected_taxa.y, ts$corrected_taxa.x)
+ts$corrected_taxa = ifelse(is.na(ts$corrected_taxa), ts$reported_taxa, ts$corrected_taxa)
+ts$corrected_taxa.x = NULL
+ts$corrected_taxa.y = NULL
+
+tx_df = data.frame(name = unique(ts$corrected_taxa))
+tx_df$name1 = gsub("^\\s+|\\s+$", "", tx_df$name)
+tx_df$count = sapply(strsplit(tx_df$name1, " "), length)
+tx_df = subset(tx_df, count == 2)
+#tx_search <- tnrs_match_names(names = tx_df$name1, context_name = "All life")
+#saveRDS(tx_search, "/Users/bo1tfj/Google Drive/research/stability_coherence/space_phy_time/data/produced_data/rotl_output.rds")
+tx_search = readRDS("/Users/bo1tfj/Google Drive/research/stability_coherence/space_phy_time/data/produced_data/rotl_output.rds")
+#ott_in_tree <- ott_id(sp_search)[is_in_tree(ott_id(sp_search))]
+#saveRDS(ott_in_tree, "/Users/bo1tfj/Google Drive/research/stability_coherence/space_phy_time/data/produced_data/ott_output.rds")
+ott_in_tree = readRDS("/Users/bo1tfj/Google Drive/research/stability_coherence/space_phy_time/data/produced_data/ott_output.rds")
+#tr <- tol_induced_subtree(ott_ids = ott_in_tree)
+#saveRDS(tr, "/Users/bo1tfj/Google Drive/research/stability_coherence/space_phy_time/data/produced_data/tree_output.rds")
+tr = readRDS("/Users/bo1tfj/Google Drive/research/stability_coherence/space_phy_time/data/produced_data/tree_output.rds")
+tr = ape::compute.brlen(tr)
+tip_labels = data.frame(
+  tips_chr = as.factor(tr$tip.label),
+  tips_num = as.numeric(as.factor(tr$tip.label))
+)
+tr$tip.label = as.numeric(as.factor(tr$tip.label)) 
+
+tx_df$name1 = tolower(tx_df$name1)
+tx_df = left_join(tx_df, tx_search, by = c("name1" = "search_string"))
+
+ts = left_join(ts, tx_df[,c(1,4,6)], by = c("corrected_taxa" = "name"))
+ts$X = NULL
+
+ts$unique_site = paste0(ts$dataset_id, ts$sub_site, ts$site, ts$region)
+
+
+ts = as.data.table(ts)
+
+#ts_expand = list()
+#a_count = 0
+#for(a in unique(ts$unique_site)){
+#  a_count = a_count + 1  
+#  message((a_count/length(unique(ts$unique_site)))*100)
+#  trim = ts[unique_site == a]
+#  trim = unique(trim)
+#  expand_trim = as.data.table(expand.grid.alt(unique(trim$unique_name), unique(trim$year)))
+#  expand_trim$dataset_id = trim$dataset_id[1]
+#  expand_trim$unique_site = trim$unique_site[1]
+#  ts_expand[[a_count]] = expand_trim
+#}
+#
+#ts_expand = rbindlist(ts_expand)
+#colnames(ts_expand)[1:2] = c("unique_name", "year")
+#write.csv(ts_expand, "/Users/bo1tfj/Google Drive/research/stability_coherence/space_phy_time/data/produced_data/ts_expand.csv")
+ts_expand = read.csv("/Users/bo1tfj/Google Drive/research/stability_coherence/space_phy_time/data/produced_data/ts_expand.csv")
+rm(list=setdiff(ls(), c("ott_in_tree", "sp", "ts", "ts_expand", "tx", "tx_df", "tx_search", "tr", "expand.grid.alt", "is.nan.data.frame", "norm_range", "rsq", "tip_labels")))
+ts_expand$year = as.integer(ts_expand$year)
+
+#Add site back in
+tmp_site_df = ts[!kit::fduplicated(ts[,c("site", "unique_site")]),c("site", "unique_site")]
+ts_expand = left_join(ts_expand, tmp_site_df)
+
+#Add units back in
+tmp_unit_df = ts[!kit::fduplicated(ts[,c("unique_name", "unique_site", "unit")]),c("unique_name", "unique_site", "unit")]
+ts_expand = left_join(ts_expand, tmp_unit_df)
+
+ts_expand = left_join(ts_expand, ts[,c(1,3,5,6,7,9,10,12,14)])
+ts_expand$abundance = ifelse(is.na(ts_expand$abundance), 0, ts_expand$abundance)
+rm(ts, tmp_unit_df, tmp_site_df)
+ts_expand$X = NULL
+ts_sum = ts_expand %>%
+  group_by(dataset_id, site, unique_site, unique_name, year, unit) %>%
+  summarise(median_abundance = mean(abundance, na.rm = T))
+rm(ts_expand)
+ts_sum = as.data.frame(ts_sum)
+ts_sum = left_join(ts_sum, tx_df[!kit::fduplicated(tx_df[,c("ott_id", "unique_name")]),c("ott_id", "unique_name")])
+ts_sum = left_join(ts_sum, sp[!kit::fduplicated(sp[,c(1:3)]),])
+
+
+
+ts_norm = ts_sum %>%
+  group_by(dataset_id, site, unique_site, unique_name, ott_id, country, latitude, longitude, unit) %>%
+  mutate(year = year, 
+         abundance_norm = norm_range(median_abundance))
+
+#Remove na species name
+ts_norm = subset(ts_norm, !is.na(unique_name))
+#Remove spqacies wehere only genus in known
+ts_norm = ts_norm[which(sapply(strsplit(ts_norm$unique_name, " "), length) == 2),]
+
+#Remove erronous coordinates
+ts_norm$latitude = as.numeric(ts_norm$latitude)
+ts_norm$longitude = as.numeric(ts_norm$longitude)
+ts_norm = subset(ts_norm, latitude < 90  & latitude > -90 & longitude < 180 & longitude > -180)
+
+ts_desc = ts_norm %>%
+  group_by(dataset_id, site, unique_site, unique_name, ott_id, country, latitude, longitude, unit) %>%
+  summarise(year_range = max(year) - min(year), 
+            count = n() - 1)
+ts_desc$perc = (ts_desc$count/ts_desc$year_range)*100
+
+
+world <- ne_countries(scale = "medium", returnclass = "sf")
+my_breaks = c(5, 50, 500, 5000, 50000)
+ggplot() +
+  geom_hex(data = ts_desc, aes(x = longitude, y = latitude), alpha = 0.8) + 
+  scale_fill_gradientn(colors = alpha(c(brewer.pal(11, "Blues")), alpha = 0.8), name = "Time series (N)", trans = "log10", breaks = my_breaks, labels = my_breaks) +
+  geom_sf(data = world, alpha = 0) +
+  labs(x = "Longitude", y = "Latitude") + 
+  theme_classic() +
+  theme(
+    axis.title = element_text(size = 20)
+  )
+
+ts_spec = ts_desc %>%
+  group_by(unique_name, ott_id) %>%
+  summarise(trend_freq = n())
+ts_spec$name = paste0("ott",ts_spec$ott_id)
+
+s_tree = read.tree("/Users/bo1tfj/Google Drive/research/stability_coherence/space_phy_time/data/opentree10.4_tree/labelled_supertree/labelled_supertree.tre")
+s_tree = extract.clade(s_tree, "ott304358") #Only eukarotes
+tree = ape::compute.brlen(s_tree)
+H<-nodeHeights(tree)
+MaxHeight<-max(H)*0.9
+h1<-which(H[,1]<MaxHeight)
+h2<-which(H[,2]>MaxHeight)
+ii<-intersect(h1,h2)
+nodes<-tree$edge[ii,2]
+getDescendants<-phytools:::getDescendants
+tips = phangorn::Descendants(tree, nodes, "tips")
+cmb_tip = NULL
+for(a in 1:length(tips)){
+  tip_df = data.frame(
+    link_tip = tree$tip.label[tips[[a]][tips[[a]]<=Ntip(tree)][1]] ,
+    name = tree$tip.label[tips[[a]]]
+  )
+  cmb_tip = rbind(cmb_tip, tip_df)
+}
+cmb_tip$present = cmb_tip$name %in% ts_spec$name
+cmb_tip = left_join(cmb_tip, ts_spec[,c(4,3)])
+tip_sum = cmb_tip %>%
+  group_by(link_tip) %>%
+  dplyr::summarise(sum_present = sum(present), N = n(), mean_freq = mean(trend_freq, na.rm = T))
+
+tip_sum$mean_freq[is.nan(tip_sum$mean_freq)] <- 0
+tip_sum$present_perc = (tip_sum$sum_present/tip_sum$N)*100
+tip_sum_total_species = sum(tip_sum$N)
+tip_sum = subset(tip_sum, N >9)
+tip_sum_total_species2 = sum(tip_sum$N)
+(tip_sum_total_species2/tip_sum_total_species)*100
+tree<-drop.tip(tree,setdiff(tree$tip.label,tip_sum$link_tip))
+
+tip_suma = data.frame('A' = tip_sum$N)
+tip_sumb = data.frame('A' = tip_sum$present_perc)
+tip_sumc = data.frame('B' = tip_sum$mean_freq)
+rownames(tip_suma) = tip_sum$link_tip
+rownames(tip_sumb) = tip_sum$link_tip
+rownames(tip_sumc) = tip_sum$link_tip
+plt_tree <- ggtree(tree, layout = "fan", open.angle = 15) 
+plt_tree <- gheatmap(plt_tree, tip_sumb, offset=0, width=.1,
+                     colnames_position = "top", colnames_offset_y = 1, color = "white", legend_title = 'b') + 
+  scale_fill_viridis_c(name = "  A: Species\n captured (%)", trans = "log10") 
+plt_tree = plt_tree + new_scale_fill()
+plt_tree <- gheatmap(plt_tree, tip_sumc, offset=0.15, width=.1,
+                     colnames_position = "top", colnames_offset_y = 1, color = "white", legend_title = '') + 
+  scale_fill_viridis_c(name = "  B: Time series\n  per species", trans = "log10") 
+plt_tree
+phylosig(compute.brlen(tree), log10(tip_sumb$A+1), method = "lambda", test = T)
+phylosig(compute.brlen(tree), log10(tip_sumc$B+1), method = "lambda", test = T)
+
+ggplot() +
+  geom_histogram(data = ts_desc, aes(x = (count)),binwidth = 1, alpha = 0.4) +
+  coord_cartesian(xlim = c(0,20), expand = c(0,0)) +
+  scale_y_continuous(breaks = c(0,500000,1000000,1500000,2000000,2500000), labels = c("0", "0.5 million", "1 million", "1.5 million", "2 million", "2.5 million")) +
+  labs(x = "Observations per time series (N)", y = "Frequency (N)\n") +
+  theme_classic() +
+  theme(
+    axis.title = element_text(size = 20)
+  )
+
+mean(ts_spec$trend_freq)
+median(ts_spec$trend_freq)
+quantile(ts_spec$trend_freq, probs = c(0.25, 0.75))
+rm(cmb_tip, H, ts_sum)
+
+ts_norm = left_join(ts_norm, ts_desc)
+ts_norm = subset(ts_norm, dataset_id == 54)
+ts_norm$phy = paste0(gsub(" ", "_", ts_norm$unique_name), "_ott", ts_norm$ott_id)
+ts_norm = left_join(ts_norm, tip_labels, by = c("phy" = "tips_chr"))
+phy_mat = ape::vcv.phylo(tr)
+ts_norm$site_spec = paste0(ts_norm$unique_site, ts_norm$unique_name)
+ts_norm$site2 = paste0(ts_norm$latitude,"_", ts_norm$longitude)
+ts_norm$lat_round = round(ts_norm$latitude, 0)
+ts_norm$lon_round = round(ts_norm$longitude, 0)
+ts_norm$site2_round = paste0(ts_norm$lat_round,"_", ts_norm$lon_round)
+spa_df = unique(ts_norm[,c("site2_round","lat_round", "lon_round")])
+rm(sp)
+rm(ts_desc)
+spa_df$site_num = as.numeric(as.factor(spa_df$site2_round))
+ts_norm = left_join(ts_norm, spa_df[,c(1,4)])
+ts_norm = ts_norm[,c(1,5,12:15,17,18,23)]
+spa_mat = as.matrix(dist(spa_df[,c(2,3)], diag=T, upper=T))
+spa_mat = norm_range(spa_mat)
+spa_mat = abs(spa_mat - 1)  
+
+
+ts_norm_trim = subset(ts_norm, year_range > 4 & perc >= 100)
+#comp_df = NULL
+#for(a in c(5,10,20,50)){
+a = 20
+  print(a)
+  samp = sample(unique(ts_norm_trim$site_num),a)
+  trim_df = ts_norm_trim[ts_norm_trim$site_num %in% samp, ]
+  #trim_df = ts_norm_trim
+  trim_df = trim_df[trim_df$tips_num %in% tr$tip.label, ]
+  phy_mat2 = phy_mat[unique(trim_df$tips_num), unique(trim_df$tips_num)]
+  rownames(phy_mat2) = colnames(phy_mat2)
+  spa_mat2 = spa_mat[unique(trim_df$site_num), unique(trim_df$site_num)]
+  
+  
+  trim_df$year2 = trim_df$year
+  trim_df$year3 = trim_df$year
+  trim_df$year4 = trim_df$year
+  
+  trim_df$tips_num = as.numeric(as.factor(trim_df$tips_num))
+  trim_df$site_num = as.numeric(as.factor(trim_df$site_num))
+  rownames(phy_mat2) = as.numeric(as.factor(rownames(phy_mat2)))
+  colnames(phy_mat2) = as.numeric(as.factor(colnames(phy_mat2)))
+  rownames(spa_mat2) = as.numeric(as.factor(rownames(spa_mat2)))
+  colnames(spa_mat2) = as.numeric(as.factor(colnames(spa_mat2)))
+  
+  tim1 = Sys.time()
+  library(INLAutils)
+  library(inlabru)
+  m_inla1 <- bru(log(abundance_norm+0.01) ~ year +
+                    f(tips_num, model = "iid") +
+                    f(site_num, model = "iid")
+                 ,
+                 data = trim_df, family = "gaussian")
+  
+  m_inla2 <- inla(log(abundance_norm+0.01) ~ year +
+                    f(tips_num, year3, model = "iid") +
+                    f(site_num, year4, model = "iid")
+                  ,
+                  data = trim_df, family = "gaussian")
+  
+  m_inla3 <- inla(log(abundance_norm+0.01) ~ year +
+                   f(year2, model = "ar1", replicate = as.numeric(as.factor(site_spec))) 
+                 ,
+                 data = trim_df, family = "gaussian")
+  
+  m_inla4 <- inla(log(abundance_norm+0.01) ~ year +
+                   f(as.numeric(as.factor(site_spec)), model = "iid") +
+                   f(year2, model = "ar1", replicate = as.numeric(as.factor(site_spec))) 
+                   #f(tips_num, year3, model = "generic0", Cmatrix = phy_mat2) +
+                   #f(site_num, year4, model = "generic0", Cmatrix = spa_mat2)
+                 ,
+                 data = trim_df, family = "gaussian")
+  
+  summary(m_inla1)
+  summary(m_inla2)
+  summary(m_inla3)
+  summary(m_inla4)
+  
+  tmp = predict(m_inla1)
+  plot(tmp)
+  p = autoplot(m_inla)
+  predict(m_inla)
+  
+  m_inla$marginals.fixed
+  m1_tim = tim2 - tim1
+  
+  tim1 = Sys.time()
+  trim_df$yearf = as.factor(trim_df$year)
+  m_brm = brm(log(abundance_norm+0.01) ~ year +
+               (1|site_spec) +
+               ar(time =year, gr = site_spec, p = 1) #+
+               #(1| gr(tips_num, cov = phy_mat)) + 
+               #(1| gr(site_num, cov = spa_mat))
+              , 
+              data = trim_df, data2 = list(phy_mat = phy_mat2, spa_mat = spa_mat2), 
+              chains = 2, cores = 2)
+  summary(m_brm)
+  tim2 = Sys.time()
+  m2_tim = tim2 - tim1
+  
+  
+  m_glmmtmb = glmmTMB(log(abundance_norm+0.01)~1 + year + ar1(as.factor(year)-1|site_spec), data=trim_df,family=gaussian)
+  summary(m_glmmtmb)
+  
+  m_inla$summary.random
+  
+  sum_abs = trim_df %>%
+    group_by(year) %>%
+    dplyr::summarise(abs = sum(abundance_norm))
+  tim1 = Sys.time()
+  m1 = lm(log(abs+0.01) ~ 1 + year, data = sum_abs)
+  m1_summary = summary(m1)
+  tim2 = Sys.time()
+  m1_tim = tim2 - tim1
+  
+  trim_df$site_spec = paste0(trim_df$unique_site, trim_df$unique_name)
+  
+  tim1 = Sys.time()
+  m2 = brm(log(abundance_norm+0.01) ~ year + (1|gr(phy)) + (1|gr(site2)), data = trim_df, chains = 2, cores = 2)
+  m2_summary = summary(m2)
+  phy_int = posterior_samples(m2, "sd_phy__Intercept")^2
+  site_int = posterior_samples(m2, "sd_site2__Intercept")^2
+  mod_sig = posterior_samples(m2, "sigma")^2
+  mod_int = posterior_samples(m2, "b_Intercept")
+  mod_coef = posterior_samples(m2, "b_year")
+  mod_pred = mod_coef$b_year %o% trim_df$year
+  mod_pred = mod_pred + mod_int$b_Intercept
+  mod_pred = apply(mod_pred, 1, function(x) sd(x)^2)
+  m2_r2_f = median(((mod_pred)/(mod_pred + phy_int + site_int + mod_sig))[,1])
+  m2_r2_p = median(((phy_int)/(mod_pred + phy_int + site_int + mod_sig))[,1])
+  m2_r2_s = median(((site_int)/(mod_pred + phy_int + site_int + mod_sig))[,1])
+  tim2 = Sys.time()
+  m2_tim = tim2 - tim1
+  
+  #library(spdep)
+  #library(ncf)
+  #coordinates(mexicobirds)
+  #nb<-tri2nb(coords,row.names=NULL)
+  
+  tim1 = Sys.time()
+  m3 = brm(log(abundance_norm+0.01) ~ year + (1 + year|gr(phy)) + (1 + year|gr(site2)), data = trim_df, chains = 2, cores = 2)
+  m3_summary = summary(m3)
+  phy_int = posterior_samples(m3, "sd_phy__Intercept")^2
+  phy_yr = posterior_samples(m3, "sd_phy__year")^2
+  site_int = posterior_samples(m3, "sd_site2__Intercept")^2
+  site_yr = posterior_samples(m3, "sd_site2__year")^2
+  mod_sig = posterior_samples(m3, "sigma")^2
+  mod_int = posterior_samples(m3, "b_Intercept")
+  mod_coef = posterior_samples(m3, "b_year")
+  mod_pred = mod_coef$b_year %o% trim_df$year
+  mod_pred = mod_pred + mod_int$b_Intercept
+  mod_pred = apply(mod_pred, 1, function(x) sd(x)^2)
+  m3_r2_f = median(((mod_pred)/(mod_pred + phy_int + site_int + mod_sig))[,1])
+  m3_r2_p = median(((phy_int + phy_yr)/(mod_pred + phy_int + phy_yr + site_int + site_yr + mod_sig))[,1])
+  m3_r2_s = median(((site_int + site_yr)/(mod_pred + phy_int + phy_yr + site_int + site_yr + mod_sig))[,1])
+  tim2 = Sys.time()
+  m3_tim = tim2 - tim1
+  
+  tim1 = Sys.time()
+  m4 = brm(log(abundance_norm+0.01) ~ year + (1 + year|gr(phy)) + (1 + year|gr(site2)) + ar(year, site_spec), data = trim_df, chains = 2, cores = 2)
+  m4_summary = summary(m4)
+  phy_int = posterior_samples(m4, "sd_phy__Intercept")^2
+  phy_yr = posterior_samples(m4, "sd_phy__year")^2
+  site_int = posterior_samples(m4, "sd_site2__Intercept")^2
+  site_yr = posterior_samples(m4, "sd_site2__year")^2
+  mod_sig = posterior_samples(m4, "sigma")^2
+  mod_int = posterior_samples(m4, "b_Intercept")
+  mod_coef = posterior_samples(m4, "b_year")
+  mod_pred = mod_coef$b_year %o% trim_df$year
+  mod_pred = mod_pred + mod_int$b_Intercept
+  mod_pred = apply(mod_pred, 1, function(x) sd(x)^2)
+  m4_r2_f = median(((mod_pred)/(mod_pred + phy_int + site_int + mod_sig))[,1])
+  m4_r2_p = median(((phy_int + phy_yr)/(mod_pred + phy_int + phy_yr + site_int + site_yr + mod_sig))[,1])
+  m4_r2_s = median(((site_int + site_yr)/(mod_pred + phy_int + phy_yr + site_int + site_yr + mod_sig))[,1])
+  tim2 = Sys.time()
+  m4_tim = tim2 - tim1
+  
+  tim1 = Sys.time()
+  m5 = brm(log(abundance_norm+0.01) ~ year + (1 + year| gr(phy, cov = phy_mat)) + (1 + year| gr(site2, cov = spa_mat)) + ar(year, site_spec), data = trim_df, data2 = list(phy_mat = phy_mat, spa_mat = spa_mat), chains = 2, cores = 2)
+  m5_summary = summary(m5)
+  m5_summary$cor_pars[1]
+  phy_int = posterior_samples(m5, "sd_phy__Intercept")^2
+  phy_yr = posterior_samples(m5, "sd_phy__year")^2
+  site_int = posterior_samples(m5, "sd_site2__Intercept")^2
+  site_yr = posterior_samples(m5, "sd_site2__year")^2
+  mod_sig = posterior_samples(m5, "sigma")^2
+  mod_int = posterior_samples(m5, "b_Intercept")
+  mod_coef = posterior_samples(m5, "b_year")
+  mod_pred = mod_coef$b_year %o% trim_df$year
+  mod_pred = mod_pred + mod_int$b_Intercept
+  mod_pred = apply(mod_pred, 1, function(x) sd(x)^2)
+  m5_r2_f = median(((mod_pred)/(mod_pred + phy_int + site_int + mod_sig))[,1])
+  m5_r2_p = median(((phy_int + phy_yr)/(mod_pred + phy_int + phy_yr + site_int + site_yr + mod_sig))[,1])
+  m5_r2_s = median(((site_int + site_yr)/(mod_pred + phy_int + phy_yr + site_int + site_yr + mod_sig))[,1])
+  tim2 = Sys.time()
+  m5_tim = tim2 - tim1
+  
+  df = data.frame(
+    run = a,
+    model = c(1:5),
+    r2_f = c(NA, m2_r2_f, m3_r2_f, m4_r2_f, m5_r2_f),
+    r2_p = c(NA, m2_r2_p, m3_r2_p, m4_r2_p, m5_r2_p),
+    r2_s = c(NA, m2_r2_s, m3_r2_s, m4_r2_s, m5_r2_s),
+    ar = c(NA, NA, NA, m4_summary$cor_pars[1], m5_summary$cor_pars[1]),
+    coef = c(m1_summary$coefficients[2], m2_summary$fixed[2,1], m3_summary$fixed[2,1], m4_summary$fixed[2,1], m5_summary$fixed[2,1]),
+    lci = c(confint(m1)[2,1], m2_summary$fixed[2,3], m3_summary$fixed[2,3], m4_summary$fixed[2,3], m5_summary$fixed[2,3]),
+    uci = c(confint(m1)[2,2], m2_summary$fixed[2,4], m3_summary$fixed[2,4], m4_summary$fixed[2,4], m5_summary$fixed[2,4]),
+    time = c(m1_tim, m2_tim, m3_tim, m4_tim, m5_tim),
+    spec = ncol(phy_mat),
+    spa = ncol(spa_mat),
+    obv = nrow(trim_df)
+  )
+  comp_df = rbind(comp_df, df)
+}
+
+time = lm(as.numeric(time) ~ poly(obv,2), data = comp_df[which(comp_df$model == 5),])
+library(ggeffects)
+pred_time = ggpredict(time, terms = "obv[10,100,1000,10000,100000]")
+pred_time$predicted = pred_time$predicted/60/60
+ggplot() +
+  geom_point(data = pred_time, aes(x = x, y = predicted)) +
+  geom_smooth(data = pred_time, aes(x = x, y = predicted)) +
+  scale_x_sqrt()
+
+for(a in unique(ts_norm_trim$dataset_id)){
+  trim_df = subset(ts_norm_trim, dataset_id == a)
+  trim_tree = drop.tip(tr,setdiff(tr$tip.label,unique(trim_df$phy)))
+  phy_mat = ape::vcv.phylo(trim_tree)
+  phy_mat = apply(phy_mat, MARGIN = 2, FUN = function(X) (X - min(X))/diff(range(X)))
+  trim_df = trim_df[which(trim_df$phy %in% rownames(phy_mat)),]
+  
+  sum_abs = trim_df %>%
+    group_by(year) %>%
+    dplyr::summarise(abs = sum(abundance_norm))
+  m1 = lm(log(abs+0.01) ~ 1 + year, data = sum_abs)
+  m1_summary = summary(m1)
+  
+  trim_df$site_spec = paste0(trim_df$unique_site, trim_df$unique_name)
+
+  if(nrow(unique(trim_df[,c("latitude", "longitude")]))<2){
+    m2 = brm(log(abundance_norm+0.01) ~ year + (1|gr(phy)), data = trim_df)
+    m2_summary = summary(m2)
+    phy_int = posterior_samples(m2, "sd_phy__Intercept")^2
+    mod_sig = posterior_samples(m2, "sigma")^2
+    mod_int = posterior_samples(m2, "b_Intercept")
+    mod_coef = posterior_samples(m2, "b_year")
+    mod_pred_m = mod_coef$b_year %o% trim_df$year
+    mod_pred_m = mod_pred_m + mod_int$b_Intercept
+    mod_predt_m = (exp(mod_pred_m)-0.01)
+    mod_preds_m = apply(mod_predt_m, 2, function(x) median(x))
+    mod_err_m = abs(mod_preds_m - trim_df$abundance_norm)
+    m2_mae_m = mean(mod_err_m)
+    mod_pred_c = posterior_predict(m2)
+    mod_predt_c = (exp(mod_pred_c)-0.01)
+    mod_preds_c = apply(mod_predt_c, 2, function(x) median(x))
+    mod_err_c = abs(mod_preds_c - trim_df$abundance_norm)
+    m2_mae_c = mean(mod_err_c)
+    mod_pred = apply(mod_pred_m, 1, function(x) sd(x)^2)
+    m2_r2_m = median(((mod_pred)/(mod_pred + phy_int + mod_sig))[,1])
+    m2_r2_c = median(((mod_pred + phy_int)/(mod_pred + phy_int + mod_sig))[,1])
+    
+    m3 = brm(log(abundance_norm+0.01) ~ year + (1 + year|gr(phy)), data = trim_df)
+    m3_summary = summary(m3)
+    phy_int = posterior_samples(m3, "sd_phy__Intercept")^2
+    phy_yr = posterior_samples(m3, "sd_phy__year")^2
+    mod_sig = posterior_samples(m3, "sigma")^2
+    mod_int = posterior_samples(m3, "b_Intercept")
+    mod_coef = posterior_samples(m3, "b_year")
+    mod_pred_m = mod_coef$b_year %o% trim_df$year
+    mod_pred_m = mod_pred_m + mod_int$b_Intercept
+    mod_predt_m = (exp(mod_pred_m)-0.01)
+    mod_preds_m = apply(mod_predt_m, 2, function(x) median(x))
+    mod_err_m = abs(mod_preds_m - trim_df$abundance_norm)
+    m3_mae_m = mean(mod_err_m)
+    mod_pred_c = posterior_predict(m3)
+    mod_predt_c = (exp(mod_pred_c)-0.01)
+    mod_preds_c = apply(mod_predt_c, 2, function(x) median(x))
+    mod_err_c = abs(mod_preds_c - trim_df$abundance_norm)
+    m3_mae_c = mean(mod_err_c)
+    mod_pred = apply(mod_pred_m, 1, function(x) sd(x)^2)
+    m3_r2_m = median(((mod_pred)/(mod_pred + phy_int + phy_yr + mod_sig))[,1])
+    m3_r2_c = median(((mod_pred + phy_int + phy_yr)/(mod_pred + phy_int + phy_yr + mod_sig))[,1])
+    
+    m4 = brm(log(abundance_norm+0.01) ~ year + (1 + year|gr(phy)) + ar(year, site_spec), data = trim_df)
+    m4_summary = summary(m4)
+    phy_int = posterior_samples(m4, "sd_phy__Intercept")^2
+    phy_yr = posterior_samples(m4, "sd_phy__year")^2
+    mod_sig = posterior_samples(m4, "sigma")^2
+    mod_int = posterior_samples(m4, "b_Intercept")
+    mod_coef = posterior_samples(m4, "b_year")
+    mod_pred_m = mod_coef$b_year %o% trim_df$year
+    mod_pred_m = mod_pred_m + mod_int$b_Intercept
+    mod_predt_m = (exp(mod_pred_m)-0.01)
+    mod_preds_m = apply(mod_predt_m, 2, function(x) median(x))
+    mod_err_m = abs(mod_preds_m - trim_df$abundance_norm)
+    m4_mae_m = mean(mod_err_m)
+    mod_pred_c = posterior_predict(m4)
+    mod_predt_c = (exp(mod_pred_c)-0.01)
+    mod_preds_c = apply(mod_predt_c, 2, function(x) median(x))
+    mod_err_c = abs(mod_preds_c - trim_df$abundance_norm)
+    m4_mae_c = mean(mod_err_c)
+    mod_pred = apply(mod_pred_m, 1, function(x) sd(x)^2)
+    m4_r2_m = median(((mod_pred)/(mod_pred + phy_int + phy_yr + mod_sig))[,1])
+    m4_r2_c = median(((mod_pred + phy_int + phy_yr)/(mod_pred + phy_int + phy_yr + mod_sig))[,1])
+    
+    m5 = brm(log(abundance_norm+0.01) ~ year + (1 + year| gr(phy, cov = phy_mat)) + ar(year, site_spec), data = trim_df, data2 = list(phy_mat = phy_mat))
+    m5_summary = summary(m5)
+    phy_int = posterior_samples(m5, "sd_phy__Intercept")^2
+    phy_yr = posterior_samples(m5, "sd_phy__year")^2
+    mod_sig = posterior_samples(m5, "sigma")^2
+    mod_int = posterior_samples(m5, "b_Intercept")
+    mod_coef = posterior_samples(m5, "b_year")
+    mod_pred_m = mod_coef$b_year %o% trim_df$year
+    mod_pred_m = mod_pred_m + mod_int$b_Intercept
+    mod_predt_m = (exp(mod_pred_m)-0.01)
+    mod_preds_m = apply(mod_predt_m, 2, function(x) median(x))
+    mod_err_m = abs(mod_preds_m - trim_df$abundance_norm)
+    m5_mae_m = mean(mod_err_m)
+    mod_pred_c = posterior_predict(m5)
+    mod_predt_c = (exp(mod_pred_c)-0.01)
+    mod_preds_c = apply(mod_predt_c, 2, function(x) median(x))
+    mod_err_c = abs(mod_preds_c - trim_df$abundance_norm)
+    m5_mae_c = mean(mod_err_c)
+    mod_pred = apply(mod_pred_m, 1, function(x) sd(x)^2)
+    m5_r2_m = median(((mod_pred)/(mod_pred + phy_int + phy_yr + mod_sig))[,1])
+    m5_r2_c = median(((mod_pred + phy_int + phy_yr)/(mod_pred + phy_int + phy_yr + mod_sig))[,1])
+    
+    head(samples1)
+    coef(m4)
+    fixef(m4)
+    ranef(m4)
+    bayes_R2(m3)
+    VarCorr(m)
+  } else {
+    m2 = lmer(log(median_abundance + 0.01) ~ 1 + year + (1|unique_name) + (1|site), data = trim_df)
+    summary(m2)
+    
+    m3 = lmer(log(median_abundance + 0.01) ~ 1 + year + (1 + year|unique_name) + (1 + year|site), data = trim_df)
+    summary(m3)
+    
+    spa_mat = as.matrix(dist(unique(trim_df[,c("site","latitude", "longitude")]), diag=T, upper=T))
+    View(spa_mat)
+    m4 = brm(log(median_abundance) ~ 1 + year +(1 + time | gr(phylogenetic_covariance_matrix) +ar(time, species))
+    
+  }
+
+
+
+
+  }
+

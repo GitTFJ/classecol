@@ -1,0 +1,48 @@
+classifier = function(text, tag, sentiment = NULL){
+
+  #Load packages
+  library(RTextTools)
+  library(tm)
+  require(nnet)
+
+  #Create dtm
+  matrix = create_matrix(text, language="english", removeNumbers=TRUE, weighting=tm::weightTfIdf)
+  
+  rowTotals <- apply(matrix , 1, sum)
+  matrix <- matrix[rowTotals> 0, ]
+
+  #Remove sparse terms
+  matrix = removeSparseTerms(matrix, .99)
+
+  #Specify size of the training data
+  size = as.integer(0.85*length(text))
+
+  #Place data into model-friendly structure
+  container = create_container(matrix, tag, trainSize = c(1:size), testSize = c((size + 1):length(text)), virgin=TRUE)
+
+  #Run classifier
+  if(length(unique(tag)) > 2){
+  models = train_models(container, algorithms=c("SVM","SLDA","BOOSTING","BAGGING","RF","GLMNET","TREE", "NNET")) 
+  } else {
+    models = train_models(container, algorithms=c("SVM","SLDA","BOOSTING","BAGGING","RF","GLMNET","TREE")) 
+  }
+
+  #Predict outputs
+  results = classify_models(container, models)
+
+  #Add trues
+  results$test = tag[((size + 1):length(text))]
+  results$test = as.factor(results$test)
+  
+  #Train the ensemble
+  if(is.null(sentiment)){
+    ensemble = multinom(test ~ ., data = results[,c(TRUE,FALSE)])
+  } else {
+    ensemble = multinom(test ~ ., data = 
+                          cbind(results[,c(TRUE,FALSE)], sentiment[c((size + 1):length(text)),]))
+  }
+
+
+  models = list(models, ensemble)
+  return(models)
+}

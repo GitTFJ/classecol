@@ -1,0 +1,73 @@
+
+#Hunt ---
+hunt = read.csv("../background/hunt.csv", stringsAsFactors=FALSE, fileEncoding="latin1")
+
+##Full
+hunt$text = clean(hunt$text)
+hunt$tags = gsub("Relevant (pro-hunt_fish)", "Relevant (pro-hunting)", hunt$tags, fixed = T)
+hunt_mod_full = classifier(hunt$text, hunt$tags)
+saveRDS(hunt_mod_full, "data/hunt_mod_full.rds")
+
+##Relevance
+hunt$tags2 = hunt$tags
+hunt$tags2 = gsub("Relevant (pro-hunting)", "Relevant", hunt$tags2, fixed = T)
+hunt$tags2 = gsub("Relevant (against-hunting)", "Relevant", hunt$tags2, fixed = T)
+hunt_mod_rel = classifier(hunt$text, hunt$tags2)
+saveRDS(hunt_mod_full, "data/hunt_mod_rel.rds")
+
+##Stance
+hunt = subset(hunt, tags != "Irrelevant")
+hunt_mod_sta = classifier(hunt$text, hunt$tags)
+saveRDS(hunt_mod_sta, "data/hunt_mod_sta.rds")
+
+
+#Nature ---
+nat = read.csv("../background/nat.csv", stringsAsFactors=FALSE, fileEncoding="latin1")
+
+##Full
+nat$text = clean(nat$text, "full")
+sm = as.matrix(cbind(
+  classecol::valence(nat$text),
+  classecol::lang_eng(nat$text),
+  classecol::senti_matrix(nat$text)))
+nat_mod_full = classifier(nat$text, nat$tags, sentiment = sm)
+saveRDS(nat_mod_full, "data/nat_mod_full.rds")
+
+##Trim
+nat = subset(nat, tags != "Against-wildlife")
+nat_mod_trim = classifier(nat$text, nat$tags, sentiment = sm)
+saveRDS(nat_mod_trim, "data/nat_mod_trim.rds")
+
+##Relevance
+nat$tags2 = nat$tags
+nat$tags2 = gsub("Pro-wildlife (positive phrasing)", "Relevant", nat$tags2, fixed = T)
+nat$tags2 = gsub("Pro-wildlife (negative phrasing)", "Relevant", nat$tags2, fixed = T)
+nat_mod_rel = classifier(nat$text, nat$tags2, sentiment = sm)
+saveRDS(nat_mod_rel, "data/nat_mod_rel.rds")
+
+##Stance
+nat = subset(nat, tags != "Irrelevant")
+nat_mod_sta = classifier(nat$text, nat$tags, sentiment = sm)
+saveRDS(nat_mod_sta, "data/nat_mod_sta.rds")
+
+
+#Nature ---
+bio = read.csv("../../background/bio.csv", stringsAsFactors=FALSE, fileEncoding="latin1")
+
+##Full
+bio_mod_full = classifier(bio$text, bio$tags)
+saveRDS(bio_mod_full, "data/bio_mod_full.rds")
+
+##Person
+bio$tags2 = bio$tags
+bio$tags2 = gsub("Expert", "Other", bio$tags2)
+bio$tags2 = gsub("Wildlife org", "Other", bio$tags2)
+bio$tags2 = gsub("Organisation/Group/Company/Other", "Other", bio$tags2)
+bio_mod_pers = classifier(bio$text, bio$tags2)
+saveRDS(bio_mod_pers, "bio_mod_pers.rds")
+
+##Expert
+bio = subset(bio, tags != "Wildlife org")
+bio = subset(bio, tags != "Organisation/Group/Company/Other")
+bio_mod_exp = classifier(bio$text, bio$tags)
+saveRDS(bio_mod_exp, "data/bio_mod_exp.rds")

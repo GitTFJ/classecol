@@ -1,0 +1,30 @@
+# Step 0 - Preperation ----
+
+##Set working directory ----
+setwd("/Users/bo1tfj/Library/CloudStorage/GoogleDrive-t.f.johnson@sheffield.ac.uk/My Drive/research/stability_coherence/space_phy_time/project")
+
+##Create directory structure ----
+dir.create("raw_data")
+dir.create("produced_data")
+dir.create("outputs")
+
+##Load all packages and functions ----
+source("code/load_packages_v0.1.0.R") 
+
+##Manually add curated datasets to the 'raw_data' directory
+
+#Step 1 - Manipulation ----
+source("code/manipulate_data_v0.1.0.R") 
+
+##Load tree ----
+tr = readRDS("produced_data/tree_output.rds")
+
+##Load abundances ----
+ts_norm_clip2 = readRDS("produced_data/ts_norm6.rds")
+
+#Step 2 - Run models for each dataset
+
+
+
+
+
