@@ -1,0 +1,25 @@
+Package: classecol
+Title: Ecological text classifiers
+Version: 0.5
+Authors@R: person("Thomas Frederick", "Johnson", email = "thomas.frederick.johnson@outlook.com",
+                  role = c("aut", "cre"))
+Description: Text classifiers for nature culturomics. This includes functions to clean text data. Models built of twitter data but could be used for any text written by the general public. Current classifiers fall into three domains: Hunting, Wildlife, Biography
+License: creative commons
+Encoding: UTF-8
+LazyData: true
+Imports:
+	RTextTools,
+	tm, 
+        lexicon, 
+        qdap, 
+        stringr,
+        cld2,
+        sentimentr,
+        textstem,
+        meanr,
+Remotes:
+        trinker/lexicon,
+        trinker/qdap
+RoxygenNote: 7.1.1
+Depends: 
+    R (>= 3.10)

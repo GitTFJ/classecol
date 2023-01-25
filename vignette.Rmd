@@ -1,0 +1,139 @@
+---
+title: 'classecol: vignette'
+author: 'Thomas Frederick Johnson Github: GitTFJ'
+date: "January 2022"
+output:
+  pdf_document: default
+---
+
+
+classecol is an R package to perform nature-related text classifications of public opinion data (trained using twitter data). classecol provides a series of functions which can clean data, pull together outputs from multiple sentiment analysis approaches into one function, and has three models to classify text: hunting - to assess if the tweet is relevant to hunting, and if so, describe whether the tweet is pro- or against-hunting; nature - to assess if the tweet is relevant to nature (or the natural world), and if so, describe whether the tweet is showing concern, interest or fear; and bio - to assess who the user is e.g. a person, expert, nature organisation, or something else.
+
+NOTE: If you have developed, or are interested in developing, your own classifier, and are looking for a place to host the classifier - contact thomas.frederick.johnson(at)outlook.com. Our ambitious aim is for classecol to become a centralised hub for environmental text classifiers, and we are actively seeking contributors to the package. For guidelines on what it means to be a contributor, see: https://devguide.ropensci.org/collaboration.html#friendlyfiles.
+
+
+# Loading classecol
+The most recent and throughly tested version of classecol is only available as a github repository so needs to be installed through github. 
+```{r, warning = FALSE, error = FALSE, message = FALSE, results = "hide"}
+library(devtools)
+install_github("GitTFJ/classecol")
+library(classecol)
+```
+
+
+# Text classification
+The latest version of classecol is based entirely within R, and so there is no longer a need to download python.
+
+All classifiers can be run through one function 'classify()', and the choice of classifier can be selected with the 'classifier' argument.
+
+### Hunting classifier - hun_class()
+The hunting classifier works best with Twitter data after a 'simple clean. There are three types of hunting classifier: "Hunting - relevance" - use this model when the objective is to identify if text is relevant (or not) to hunting; "Hunting - stance" - use this model on text relevant to hunting, where the objective is to identify the stance of the text (pro- or against-hunting); "Hunting - full" - use this model when the objective is to identify text that is relevant to hunting, and when relevant, describe the stance; combining the relevance and stance steps into one model.
+```{r, warning = FALSE, error = FALSE, message = FALSE}
+text = c(
+  "I hate hunting. Ban it now!", 
+  "Cant wait to go camping this weekend #hunting #fishing", 
+  "Hunting for my car keys")
+text = classecol::clean(text)
+classify(text, classifier = "Hunting - full")
+```
+
+### Nature classifier - nat_class()
+The nature classifier works best with twitter data after a full clean and also requires sentiment analysis on the text. There are four types of nature classifier: "Nature - relevance" - use this model when the objective is to identify if text is relevant (or not) to nature; "Nature - stance" - use this model on text relevant to nature, where the objective is to identify the stance of the text (positive- or negative phrasing); "Nature - trim" - use this model when the objective is to identify text that is relevant to nature, and when relevant, describe the stance, combining the relevance and stance steps into one model; Nature - full" - use this model when the objective is to identify text that is relevant to hunting, and when relevant, describe the stance. full differs to the trimmed model, as the full model includes the low accuracy ‘Against-nature’ category. 
+```{r, warning = FALSE, error = FALSE, message = FALSE}
+text = c(
+  "I love walking in nature", 
+  "Nature is being destroyed", 
+  "Tiger wins the PGA tour again!")
+text = classecol::clean(text, level = "full")
+sm = as.matrix(cbind(
+  valence(text), 
+  lang_eng(text), 
+  senti_matrix(text)))
+classify(text, classifier = "Nature - trim", sentiment = sm)
+```
+
+### Bio classifier - bio_class()
+The biographical classifier works best with Twitter data in its raw form, so none of the text should be cleaned. However, it is neccasary to join the twitter name and description into one column named 'text' split with a space. There are three types of biological classifier: "Bio - person" - use this model when the objective is to identify whether a user is a person or not; "Bio - expert" - use this model on users classified as a 'person' to identify whether the person is a nature expert or a member of the general public; "Bio - full" - use this model to identify whether the user is a person, expert, nature organisation, or other. full wraps the person and expert models into one function, and can also identify nature organisations.
+```{r, warning = FALSE, error = FALSE, message = FALSE}
+df = data.frame(
+  name = c(
+    "Jane Doe ",
+    "Thomas Frederick Johnson",
+    "Fictional University"),
+  description = c(
+    "Business leader, banker, parent, and cyclist", 
+    "Ecology and conservation researcher", 
+    "Campus life and study at the Fictional University. Follow for news and updates"), 
+  stringsAsFactors = F)
+classify(
+  text = paste(df$name, df$description),
+  classifier = "Bio - full")
+```
+
+
+
+# Additional text processing and analysis
+These additional text processing and analysis functions are not reliant on the python backend, so can be ran directly from the classecol R package
+```{r, warning = FALSE, error = FALSE, message = FALSE, results = "hide"}
+library(classecol)
+```
+
+### clean()
+Cleans social media text converting up to 1000 multi-word nature-related hashtags and over 1500 abbreviations into readable text. This function also converts nearly 150 emoticons and 175 slang-words into readable text using terms sourced from the lexicon R package (Rinker, 2019a). Can select a 'simple' or 'full' clean, where a 'simple' clean includes: hashtag conversion, removal of twitter specific syntax (e.g. RTs), removal of urls, conversion of emoticons, removal of special characters. 'full' includes all of the above as well as converting abbreviations, slang, grades and ratings. The cleaning process can also be completely customised, selecting or removing any paricular claning element. For example, one could do a 'full' clean, but specify that hashtags should not be converted (see below).
+```{r, warning = FALSE, error = FALSE, message = FALSE}
+text = "BTW tomorrow will be the best #TrophyHunting :)"
+text
+clean(text, level = "simple")
+clean(text, level = "full")
+clean(text, level = "full", hashtag = F)
+```
+
+### valence()
+Checks for the presence of negator (flips the meaning of the text e.g. I am NOT sad), amplifier (adds intensity to the text e.g. I am VERY sad), de-amplifier (softens the text e.g. I am KIND OF sad), and adversative-conjunction terms (overrules the previous sentiment e.g. I am sad, BUT proud), which could alter the meaning of the text. Terms and examples sourced from the lexicon (Rinker, 2019a) and sentiment (Rinker, 2019b) R packages.
+```{r, warning = FALSE, error = FALSE, message = FALSE}
+rbind(
+  valence("I am not sad"),
+  valence("I am very sad"),
+  valence("I am kind of sad"),
+  valence("I am sad, but proud"))
+
+```
+
+### contract()
+Performs stemming (trims word to their simplest form e.g. cars becomes car) and lemmatisation (identifies the core theme of a term, bringing synonymous terms into one word e.g. automobile becomes car) within R. Function is a wrapper for textstem (Rinker, 2018), qdap (Rinker, 2020), and lexicon (Rinker, 2019b) R packages. This function is not necessary when running any of the hun_class, nat_class, and bio_class models, as the stemming and lemmatisation are conducted within the substantially faster Python program. 
+```{r, warning = FALSE, error = FALSE, message = FALSE}
+contract("consulting")
+```
+
+### lang_eng()
+Checks if the language is English or not, the hun_class, nat_class, and bio_class models are designed for English text. Function is a wrapper to the cld2 (Ooms & Sites, 2018) R package.
+```{r, warning = FALSE, error = FALSE, message = FALSE}
+lang_eng("hallo und willkommen bei classecol")#German
+lang_eng("hello and welcome to classecol")#English
+```
+
+### senti_matrix()
+Conducts sentiment analysis (assesses polarity of text) at the sentence level using 11 approaches, and pulls all approaches into a matrix of sentiment. Approaches are drawn from the syuzhet (Jockers, 2017), meanr (Schmidt, 2019), and sentimentr (Rinker, 2019a) R packages. The sentimentr approaches rely on the following lexicons: jockers-rinker, jockers, hu-liu, loughran-mcdonald, sentinet, sentiword, and socal-google - all sourced from the lexicon (Rinker, 2019b) R package. All of these sentimentr approaches follow sentimentr's augemented dictionary method, which consider valence shifts in the sentence (see Rinker, 2019a). Jockers is the default sentimentr lexicon.
+```{r, warning = FALSE, error = FALSE, message = FALSE}
+rbind(
+  senti_matrix("I love wildlife so much, This is the best day ever"),
+  senti_matrix("I hate wildlife so much, This is the worst day ever"))
+
+```
+
+
+
+#References
+Jockers, M. (2017). syuzhet: Extracts Sentiment and Sentiment-Derived Plot Arcs from Text. R CRAN repository.
+
+Ooms, J., & Sites, D. (2018). cld2: Google’s Compact Language Detector 2. R CRAN repository.
+
+Rinker, T. (2018). textstem: Tools for Stemming and Lemmatizing Text. R CRAN repository.
+
+Rinker, T. (2019a). sentimentr: Calculate Text Polarity Sentiment. R CRAN repository.
+
+Rinker, T. (2019b). lexicon: Lexicons for Text Analysis. R CRAN repository.
+
+Rinker, T. (2020). qdap: Bridging the Gap Between Qualitative Data and Quantitative Analysis. R CRAN repository.
+
+Schmidt, D. (2019). meanr: Sentiment Analysis Scorer. R CRAN repository.
